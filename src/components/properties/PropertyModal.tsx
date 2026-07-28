@@ -2,9 +2,10 @@ import {
     ChangeEventHandler,
     SubmitEventHandler,
     MouseEventHandler,
+    useState,
 } from "react";
 import { Building2, ImageIcon, Layout, Map, Plus, X, Zap } from "lucide-react";
-import type { PropertyVM } from "../../models/types/PropertyTypes";
+import type { PropertyRoomImage, PropertyVM } from "../../models/types/PropertyTypes";
 import FormModal from "../common/FormModal";
 import { TAIWAN_REGIONS } from "../../constants/Regions";
 
@@ -14,6 +15,8 @@ type PropertyModalProps = {
     onCloseBtnClick: MouseEventHandler<HTMLButtonElement>;
     onFormChange: ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
     onFormSubmit: SubmitEventHandler<HTMLFormElement>;
+    onAddRoomImage?: (image: PropertyRoomImage) => void;
+    onDeleteRoomImage?: (imageId: string) => void;
 };
 
 const PropertyModal = ({
@@ -22,7 +25,25 @@ const PropertyModal = ({
     onCloseBtnClick,
     onFormChange,
     onFormSubmit,
+    onAddRoomImage,
+    onDeleteRoomImage,
 }: PropertyModalProps) => {
+    const [newRoomName, setNewRoomName] = useState("");
+    const [newRoomUrl, setNewRoomUrl] = useState("");
+
+    const handleAddRoomImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (!newRoomName.trim() || !newRoomUrl.trim()) return;
+        if (onAddRoomImage) {
+            onAddRoomImage({
+                id: crypto.randomUUID(),
+                name: newRoomName.trim(),
+                url: newRoomUrl.trim(),
+            });
+        }
+        setNewRoomName("");
+        setNewRoomUrl("");
+    };
     return (
         <FormModal
             formId={"property-form"}
@@ -406,23 +427,25 @@ const PropertyModal = ({
                     <div className="md:col-span-2 pt-2 border-t dark:border-slate-700 mt-2">
                         <label
                             htmlFor="evCharging"
-                            className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                            className="flex items-center gap-3 cursor-pointer select-none p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors w-full sm:w-auto"
                         >
                             <input
                                 type="checkbox"
+                                id="evCharging"
                                 name="evCharging"
                                 checked={formData.evCharging}
                                 onChange={onFormChange}
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer shrink-0"
                             />
-                            <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shrink-0">
                                 <Zap
                                     size={16}
                                     className={
                                         formData.evCharging
-                                            ? "text-amber-400"
+                                            ? "text-amber-400 fill-amber-400"
                                             : "text-slate-400"
                                     }
-                                />{" "}
+                                />
                                 具備電動車充電樁 / 預留管線
                             </span>
                         </label>
@@ -478,7 +501,7 @@ const PropertyModal = ({
                             動態新增各空間圖片 (輸入名稱與網址)
                         </label>
                         <div className="flex gap-2 mb-3">
-                            {/* <input
+                            <input
                                 type="text"
                                 value={newRoomName}
                                 onChange={(e) => setNewRoomName(e.target.value)}
@@ -491,28 +514,11 @@ const PropertyModal = ({
                                 onChange={(e) => setNewRoomUrl(e.target.value)}
                                 placeholder="圖片網址 (URL)"
                                 className="flex-grow p-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
-                            /> */}
+                            />
                             <button
                                 type="button"
-                                onClick={(e) => {
-                                    e.preventDefault();
-
-                                    // if (!newRoomName || !newRoomUrl) return;
-                                    // setFormData((prev) => ({
-                                    //     ...prev,
-                                    //     roomImages: [
-                                    //         ...(prev.roomImages || []),
-                                    //         {
-                                    //             id: generateId(),
-                                    //             name: newRoomName,
-                                    //             url: newRoomUrl,
-                                    //         },
-                                    //     ],
-                                    // }));
-                                    // setNewRoomName("");
-                                    // setNewRoomUrl("");
-                                }}
-                                className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-xl transition-colors shrink-0"
+                                onClick={handleAddRoomImage}
+                                className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-xl transition-colors shrink-0 flex items-center justify-center"
                             >
                                 <Plus size={18} />
                             </button>
@@ -539,17 +545,9 @@ const PropertyModal = ({
                                             </div>
                                             <button
                                                 type="button"
-                                                // onClick={() =>
-                                                // setFormData((prev) => ({
-                                                //     ...prev,
-                                                //     roomImages:
-                                                //         prev.roomImages.filter(
-                                                //             (i) =>
-                                                //                 i.id !==
-                                                //                 img.id,
-                                                //         ),
-                                                // }))
-                                                // }
+                                                onClick={() =>
+                                                    onDeleteRoomImage?.(img.id)
+                                                }
                                                 className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md opacity-50 group-hover:opacity-100 transition-opacity"
                                             >
                                                 <X size={14} />

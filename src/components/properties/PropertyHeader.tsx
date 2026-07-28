@@ -4,9 +4,13 @@ import { MouseEventHandler } from "react";
 
 type PropertyHeaderProps = {
     onAddBtnClick: MouseEventHandler<HTMLButtonElement>;
+    onSettingsBtnClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
-const PropertyHeader = ({ onAddBtnClick }: PropertyHeaderProps) => {
+const PropertyHeader = ({
+    onAddBtnClick,
+    onSettingsBtnClick,
+}: PropertyHeaderProps) => {
     return (
         <div className="flex justify-between items-center mb-8 sticky top-0 z-20 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xl py-3 rounded-2xl px-4 border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
             <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent flex items-center gap-2">
@@ -23,6 +27,7 @@ const PropertyHeader = ({ onAddBtnClick }: PropertyHeaderProps) => {
                 </button>
                 <ToogleThemeBtn />
                 <button
+                    onClick={onSettingsBtnClick}
                     className="p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors"
                     title="預設評分條件設定"
                 >

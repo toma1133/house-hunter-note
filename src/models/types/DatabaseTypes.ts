@@ -110,6 +110,33 @@ export type Database = {
                 };
                 Relationships: [];
             };
+            condition_templates: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    must_haves: Json;
+                    nice_to_haves: Json;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    must_haves?: Json;
+                    nice_to_haves?: Json;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    user_id?: string;
+                    must_haves?: Json;
+                    nice_to_haves?: Json;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Relationships: [];
+            };
         };
         Views: {
             [_ in never]: never;

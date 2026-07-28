@@ -7,6 +7,7 @@ type FormModalProps = {
     formId: string;
     modalTitle: string;
     modalSaveTitle: string;
+    maxWidth?: string;
     onCancelBtnClick: MouseEventHandler<HTMLButtonElement>;
     onCloseBtnClick: MouseEventHandler<HTMLButtonElement>;
     onSubmit?: SubmitEventHandler<HTMLFormElement>;
@@ -18,18 +19,19 @@ const FormModal = ({
     formId,
     modalTitle,
     modalSaveTitle,
+    maxWidth = "max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl",
     onCancelBtnClick,
     onCloseBtnClick,
     onSubmit,
 }: FormModalProps) => {
     return (
         <form id={formId} onSubmit={onSubmit}>
-            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in">
+            <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in p-0 sm:p-4">
                 <div
-                    className={`bg-card w-full max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom border border-border`}
+                    className={`bg-card w-full ${maxWidth} rounded-t-3xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom border border-border flex flex-col max-h-[90vh]`}
                 >
                     {/* Header */}
-                    <div className="flex justify-between items-center border-b border-border/50 p-6">
+                    <div className="flex justify-between items-center border-b border-border/50 p-4 sm:p-6 shrink-0">
                         <h3 className="text-lg font-bold text-foreground tracking-tight">
                             {modalTitle}
                         </h3>
@@ -43,11 +45,11 @@ const FormModal = ({
                         </button>
                     </div>
                     {/* Body - Scrollable Form */}
-                    <div className="overflow-y-auto no-scrollbar space-y-4 p-6 max-h-[75vh]">
+                    <div className="overflow-y-auto no-scrollbar space-y-4 p-4 sm:p-6 flex-1">
                         {children}
                     </div>
                     {/* Footer */}
-                    <div className="p-4 px-6 border-t border-border/50 flex justify-end items-center gap-3">
+                    <div className="p-4 sm:px-6 border-t border-border/50 flex justify-end items-center gap-3 shrink-0">
                         <button
                             type="button"
                             onClick={onCancelBtnClick}

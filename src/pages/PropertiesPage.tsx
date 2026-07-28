@@ -4,12 +4,16 @@ import { useIsMutating } from "@tanstack/react-query";
 import useAuth from "../hooks/UseAuth";
 import useProperties from "../hooks/UseProperties";
 import usePropertyMutations from "../hooks/UsePropertyMutations";
+import useConditionTemplate from "../hooks/UseConditionTemplate";
+import useConditionTemplateMutations from "../hooks/UseConditionTemplateMutations";
 import type LayoutContextType from "../models/types/LayoutContextTypes";
-import type { PropertyVM } from "../models/types/PropertyTypes";
+import type { PropertyRoomImage, PropertyVM } from "../models/types/PropertyTypes";
+import type { ConditionTemplateVM } from "../models/types/ConditionTemplateTypes";
 import PropertyList from "../components/properties/PropertyList";
-import PropertyHeader from "../components/properties/PropertyHeader";
+import PageHeader from "../components/common/PageHeader";
 import DeleteModal from "../components/common/DeleteModal";
 import PropertyModal from "../components/properties/PropertyModal";
+import ConditionModal from "../components/properties/ConditionModal";
 
 const PropertiesPage = () => {
     const { session } = useAuth();
@@ -25,6 +29,10 @@ const PropertiesPage = () => {
         remove: removeProperty,
         anyPending: anyPropertyPending,
     } = usePropertyMutations();
+
+    const { data: conditionTemplate } = useConditionTemplate(userId);
+    const { saveTemplate } = useConditionTemplateMutations();
+
     const [targetProperty, setTargetProperty] = useState<
         PropertyVM | undefined
     >(undefined);
@@ -60,6 +68,28 @@ const PropertiesPage = () => {
         setIsPageLoading,
     ]);
 
+    // Condition Template Modal
+    const [isConditionModalOpen, setIsConditionModalOpen] = useState(false);
+
+    const handleOpenConditionModal = () => {
+        setIsConditionModalOpen(true);
+    };
+
+    const handleCloseConditionModal = () => {
+        setIsConditionModalOpen(false);
+    };
+
+    const handleSaveConditionTemplate = async (
+        updatedTemplate: ConditionTemplateVM,
+    ) => {
+        if (!userId) return;
+        await saveTemplate.mutateAsync({
+            ...updatedTemplate,
+            user_id: userId,
+        });
+        setIsConditionModalOpen(false);
+    };
+
     // Property Modal
     const [isPropertyModalOpen, setIsPropertyModalOpen] = useState(false);
     const initialPropertyState: PropertyVM = useMemo(
@@ -68,7 +98,20 @@ const PropertiesPage = () => {
             buildingType: "",
             city: "台北市",
             community: "",
-            conditions: [],
+            conditions: conditionTemplate
+                ? [
+                      {
+                          mustHaves: conditionTemplate.mustHaves.map((c) => ({
+                              ...c,
+                              checked: false,
+                          })),
+                          niceToHaves: conditionTemplate.niceToHaves.map((c) => ({
+                              ...c,
+                              checked: false,
+                          })),
+                      },
+                  ]
+                : [],
             coverImage: "",
             created_at: null,
             district: "",
@@ -94,7 +137,7 @@ const PropertiesPage = () => {
             unit: "",
             user_id: session ? session.user.id : "",
         }),
-        [session],
+        [session, conditionTemplate],
     );
 
     const [propertyModalMode, setPropertyModalMode] = useState("create"); // 'create' | 'edit'
@@ -133,6 +176,22 @@ const PropertiesPage = () => {
         }
 
         setFormProperty((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddRoomImage = (image: PropertyRoomImage) => {
+        setFormProperty((prev) => ({
+            ...prev,
+            roomImages: [...(prev.roomImages || []), image],
+        }));
+    };
+
+    const handleDeleteRoomImage = (imageId: string) => {
+        setFormProperty((prev) => ({
+            ...prev,
+            roomImages: (prev.roomImages || []).filter(
+                (img) => img.id !== imageId,
+            ),
+        }));
     };
 
     const handlePropertyModalSubmit = async (e: FormEvent) => {
@@ -201,10 +260,15 @@ const PropertiesPage = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-4 pt-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen">
-            <PropertyHeader onAddBtnClick={handleAddPropertyBtnClick} />
+        <div className="max-w-5xl lg:max-w-6xl mx-auto p-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen">
+            <PageHeader
+                mode="list"
+                onAddBtnClick={handleAddPropertyBtnClick}
+                onSettingsBtnClick={handleOpenConditionModal}
+            />
             <PropertyList
                 properties={properties}
+                onCardClick={handleSelectProperty}
                 onEditBtnClick={handleEditPropertyBtnClick}
                 onDeleteBtnClick={handleOpenDeletePropertyModal}
             />
@@ -215,6 +279,15 @@ const PropertiesPage = () => {
                     onCloseBtnClick={handleClosePropertyModalBtnClick}
                     onFormChange={handlePropertyFormInputChange}
                     onFormSubmit={handlePropertyModalSubmit}
+                    onAddRoomImage={handleAddRoomImage}
+                    onDeleteRoomImage={handleDeleteRoomImage}
+                />
+            )}
+            {isConditionModalOpen && conditionTemplate && (
+                <ConditionModal
+                    template={conditionTemplate}
+                    onCloseBtnClick={handleCloseConditionModal}
+                    onSave={handleSaveConditionTemplate}
                 />
             )}
             {isDeleteModalOpen && (
