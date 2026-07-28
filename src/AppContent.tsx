@@ -13,7 +13,7 @@ import "./App.css";
 const qc = new QueryClient();
 
 const AppContent = ({ isOffline }: { isOffline: boolean }) => {
-    const basename = import.meta.env.PROD ? "/travel-app" : undefined;
+    const basename = import.meta.env.PROD ? "/house-hunter-note" : undefined;
 
     const router = createBrowserRouter(
         [
