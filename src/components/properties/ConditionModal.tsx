@@ -1,20 +1,26 @@
-import {
-    FormEvent,
-    MouseEventHandler,
-    useState,
-} from "react";
-import { Info, Plus, Trash2 } from "lucide-react";
-import type { ConditionTemplateVM, ConditionItem } from "../../models/types/ConditionTemplateTypes";
+import { FormEvent, MouseEventHandler, useState } from "react";
+import { Copy, Info, Plus, Trash2 } from "lucide-react";
+import type {
+    ConditionTemplateVM,
+    ConditionItem,
+} from "../../models/types/ConditionTemplateTypes";
+import type { PropertyVM } from "../../models/types/PropertyTypes";
+import type { WorkspaceVM } from "../../models/types/WorkspaceTypes";
 import FormModal from "../common/FormModal";
+import { conditionTemplateRepo } from "../../services/repositories/ConditionTemplateRepo";
 
 type ConditionModalProps = {
     template: ConditionTemplateVM;
+    properties?: PropertyVM[];
+    workspaces?: WorkspaceVM[];
     onCloseBtnClick: MouseEventHandler<HTMLButtonElement>;
     onSave: (updatedTemplate: ConditionTemplateVM) => Promise<void>;
 };
 
 const ConditionModal = ({
     template,
+    properties = [],
+    workspaces = [],
     onCloseBtnClick,
     onSave,
 }: ConditionModalProps) => {
@@ -27,14 +33,89 @@ const ConditionModal = ({
 
     const [newMustHaveText, setNewMustHaveText] = useState("");
     const [newNiceToHaveText, setNewNiceToHaveText] = useState("");
+    const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
+    const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>("");
     const [isSaving, setIsSaving] = useState(false);
+
+    const handleCopyFromWorkspace = async () => {
+        if (!selectedWorkspaceId) return;
+        try {
+            const workspaceTemplate =
+                await conditionTemplateRepo.getTemplate(selectedWorkspaceId);
+            if (!workspaceTemplate) return;
+
+            const { mustHaves: wsMusts, niceToHaves: wsNices } =
+                workspaceTemplate;
+
+            if (Array.isArray(wsMusts) && wsMusts.length > 0) {
+                setMustHaves((prev) => [
+                    ...prev,
+                    ...wsMusts.map((item) => ({
+                        id: crypto.randomUUID(),
+                        text: item.text,
+                        checked: false,
+                    })),
+                ]);
+            }
+
+            if (Array.isArray(wsNices) && wsNices.length > 0) {
+                setNiceToHaves((prev) => [
+                    ...prev,
+                    ...wsNices.map((item) => ({
+                        id: crypto.randomUUID(),
+                        text: item.text,
+                        checked: false,
+                    })),
+                ]);
+            }
+            setSelectedWorkspaceId("");
+        } catch (err) {
+            console.error("Failed to copy from workspace", err);
+        }
+    };
+
+    const handleCopyFromProperty = () => {
+        if (!selectedPropertyId) return;
+        const targetProp = properties.find((p) => p.id === selectedPropertyId);
+        if (!targetProp || !targetProp.conditions) return;
+
+        const { mustHaves: propMusts, niceToHaves: propNices } =
+            targetProp.conditions;
+
+        if (Array.isArray(propMusts) && propMusts.length > 0) {
+            setMustHaves((prev) => [
+                ...prev,
+                ...propMusts.map((item) => ({
+                    id: crypto.randomUUID(),
+                    text: item.text,
+                    checked: false,
+                })),
+            ]);
+        }
+
+        if (Array.isArray(propNices) && propNices.length > 0) {
+            setNiceToHaves((prev) => [
+                ...prev,
+                ...propNices.map((item) => ({
+                    id: crypto.randomUUID(),
+                    text: item.text,
+                    checked: false,
+                })),
+            ]);
+        }
+        setSelectedPropertyId("");
+    };
 
     const handleAddMustHave = (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMustHaveText.trim()) return;
         setMustHaves((prev) => [
             ...prev,
-            { id: crypto.randomUUID(), text: newMustHaveText.trim(), checked: false },
+            {
+                id: crypto.randomUUID(),
+                text: newMustHaveText.trim(),
+                checked: false,
+            },
         ]);
         setNewMustHaveText("");
     };
@@ -48,7 +129,11 @@ const ConditionModal = ({
         if (!newNiceToHaveText.trim()) return;
         setNiceToHaves((prev) => [
             ...prev,
-            { id: crypto.randomUUID(), text: newNiceToHaveText.trim(), checked: false },
+            {
+                id: crypto.randomUUID(),
+                text: newNiceToHaveText.trim(),
+                checked: false,
+            },
         ]);
         setNewNiceToHaveText("");
     };
@@ -83,14 +168,84 @@ const ConditionModal = ({
             onSubmit={handleSubmit}
         >
             <div className="space-y-6">
-                <div className="bg-indigo-50 dark:bg-indigo-950/40 p-4 rounded-2xl text-xs sm:text-sm text-indigo-800 dark:text-indigo-300 flex gap-3 items-start border border-indigo-100 dark:border-indigo-900/50">
-                    <Info size={20} className="shrink-0 text-indigo-500 mt-0.5" />
-                    <p className="leading-relaxed font-medium">
-                        這裡的條件為 <strong>「預設範本」</strong>。唯有{" "}
-                        <strong>未來新增的看屋筆記</strong>{" "}
-                        會自動載入此範本，已儲存的舊筆記不受影響。
-                    </p>
-                </div>
+                {/* Copy from other Workspace section */}
+                {workspaces.length > 1 && (
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                            <Copy size={16} className="text-indigo-500" />
+                            從其他計畫複製預設條件
+                        </label>
+                        <div className="flex gap-2">
+                            <select
+                                value={selectedWorkspaceId}
+                                onChange={(e) =>
+                                    setSelectedWorkspaceId(e.target.value)
+                                }
+                                className="flex-grow p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="">
+                                    -- 選擇要複製條件的計畫 --
+                                </option>
+                                {workspaces
+                                    .filter(
+                                        (w) => w.id !== template.workspace_id,
+                                    )
+                                    .map((w) => (
+                                        <option key={w.id} value={w.id}>
+                                            {w.name}
+                                        </option>
+                                    ))}
+                            </select>
+                            <button
+                                type="button"
+                                onClick={handleCopyFromWorkspace}
+                                disabled={!selectedWorkspaceId}
+                                className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-colors shrink-0 flex items-center gap-1"
+                            >
+                                複製
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Copy from existing Property section */}
+                {properties.length > 0 && (
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                            <Copy size={16} className="text-indigo-500" />
+                            從現有物件筆記複製評分條件
+                        </label>
+                        <div className="flex gap-2">
+                            <select
+                                value={selectedPropertyId}
+                                onChange={(e) =>
+                                    setSelectedPropertyId(e.target.value)
+                                }
+                                className="flex-grow p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="">
+                                    -- 選擇要複製條件的看屋筆記 --
+                                </option>
+                                {properties.map((p) => (
+                                    <option key={p.id} value={p.id}>
+                                        {p.community ||
+                                            p.address ||
+                                            p.unit ||
+                                            "未命名物件"}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                type="button"
+                                onClick={handleCopyFromProperty}
+                                disabled={!selectedPropertyId}
+                                className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-colors shrink-0 flex items-center gap-1"
+                            >
+                                複製
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Must Haves Section */}
                 <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
@@ -137,7 +292,9 @@ const ConditionModal = ({
                                     </span>
                                     <button
                                         type="button"
-                                        onClick={() => handleDeleteMustHave(condition.id)}
+                                        onClick={() =>
+                                            handleDeleteMustHave(condition.id)
+                                        }
                                         className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-1.5 rounded-lg opacity-70 group-hover:opacity-100 transition-all"
                                         title="刪除"
                                     >
@@ -159,7 +316,9 @@ const ConditionModal = ({
                         <input
                             type="text"
                             value={newNiceToHaveText}
-                            onChange={(e) => setNewNiceToHaveText(e.target.value)}
+                            onChange={(e) =>
+                                setNewNiceToHaveText(e.target.value)
+                            }
                             placeholder="輸入新的加分條件 (如: 近捷運站)..."
                             className="flex-grow p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm dark:text-white transition-all"
                             onKeyDown={(e) => {
@@ -194,7 +353,9 @@ const ConditionModal = ({
                                     </span>
                                     <button
                                         type="button"
-                                        onClick={() => handleDeleteNiceToHave(condition.id)}
+                                        onClick={() =>
+                                            handleDeleteNiceToHave(condition.id)
+                                        }
                                         className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-1.5 rounded-lg opacity-70 group-hover:opacity-100 transition-all"
                                         title="刪除"
                                     >

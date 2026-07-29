@@ -46,6 +46,7 @@ export type Database = {
                     transactions: Json;
                     unit: string;
                     user_id: string;
+                    workspace_id: string | null;
                 };
                 Insert: {
                     address?: string | null;
@@ -78,6 +79,7 @@ export type Database = {
                     transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;
+                    workspace_id?: string | null;
                 };
                 Update: {
                     address?: string | null;
@@ -110,13 +112,14 @@ export type Database = {
                     transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;
+                    workspace_id?: string | null;
                 };
                 Relationships: [];
             };
             condition_templates: {
                 Row: {
                     id: string;
-                    user_id: string;
+                    workspace_id: string | null;
                     must_haves: Json;
                     nice_to_haves: Json;
                     created_at: string;
@@ -124,7 +127,7 @@ export type Database = {
                 };
                 Insert: {
                     id?: string;
-                    user_id: string;
+                    workspace_id?: string | null;
                     must_haves?: Json;
                     nice_to_haves?: Json;
                     created_at?: string;
@@ -132,11 +135,80 @@ export type Database = {
                 };
                 Update: {
                     id?: string;
-                    user_id?: string;
+                    workspace_id?: string | null;
                     must_haves?: Json;
                     nice_to_haves?: Json;
                     created_at?: string;
                     updated_at?: string;
+                };
+                Relationships: [];
+            };
+            workspaces: {
+                Row: {
+                    id: string;
+                    name: string;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    name: string;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    name?: string;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Relationships: [];
+            };
+            workspace_members: {
+                Row: {
+                    workspace_id: string;
+                    user_id: string;
+                    role: string;
+                    created_at: string;
+                };
+                Insert: {
+                    workspace_id: string;
+                    user_id: string;
+                    role?: string;
+                    created_at?: string;
+                };
+                Update: {
+                    workspace_id?: string;
+                    user_id?: string;
+                    role?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            workspace_invites: {
+                Row: {
+                    id: string;
+                    workspace_id: string;
+                    inviter_id: string;
+                    invitee_email: string;
+                    status: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    workspace_id: string;
+                    inviter_id: string;
+                    invitee_email: string;
+                    status?: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    workspace_id?: string;
+                    inviter_id?: string;
+                    invitee_email?: string;
+                    status?: string;
+                    created_at?: string;
                 };
                 Relationships: [];
             };
@@ -145,7 +217,13 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
-            [_ in never]: never;
+            process_workspace_invite: {
+                Args: {
+                    p_invite_id: string;
+                    p_status: string;
+                };
+                Returns: void;
+            };
         };
         Enums: {
             [_ in never]: never;

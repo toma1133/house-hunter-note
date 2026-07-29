@@ -16,10 +16,16 @@ export const propertyRepo: IRepo<PropertyRow, PropertyVM, PropertyVM, string> =
             return data ?? null;
         },
         async list(parentId: string | undefined): Promise<PropertyRow[]> {
-            const { data, error } = await supabaseClient
+            let query = supabaseClient
                 .from("properties")
                 .select("*")
                 .order("created_at", { ascending: true });
+
+            if (parentId) {
+                query = query.eq("workspace_id", parentId);
+            }
+
+            const { data, error } = await query;
             if (error) throw error;
             return data ?? [];
         },

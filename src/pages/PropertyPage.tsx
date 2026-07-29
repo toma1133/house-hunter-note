@@ -20,11 +20,10 @@ import PropertyTransactionsCard from "../components/property/PropertyTransaction
 import PropertyGalleryCard from "../components/property/PropertyGalleryCard";
 import PropertyChecklistCard from "../components/property/PropertyChecklistCard";
 
-const calculateScore = (conditions: PropertyCondition[]) => {
-    if (!conditions || conditions.length === 0) return 0;
-    const cond = conditions[0];
-    const mustHaves = cond?.mustHaves || [];
-    const niceToHaves = cond?.niceToHaves || [];
+const calculateScore = (cond: PropertyCondition | null | undefined) => {
+    if (!cond) return 0;
+    const mustHaves = cond.mustHaves || [];
+    const niceToHaves = cond.niceToHaves || [];
 
     const mustHaveTotal = mustHaves.length;
     const mustHaveChecked = mustHaves.filter((c) => c.checked).length;
@@ -40,12 +39,15 @@ const calculateScore = (conditions: PropertyCondition[]) => {
 };
 
 const PropertyPage = () => {
-    const { id } = useParams<{ id: string }>();
+    const { workspaceId, id } = useParams<{
+        workspaceId: string;
+        id: string;
+    }>();
     const navigate = useNavigate();
     const { session } = useAuth();
     const userId = session?.user?.id;
     const { data: prop, isLoading, error } = useProperty(id);
-    const { data: conditionTemplate } = useConditionTemplate(userId);
+    const { data: conditionTemplate } = useConditionTemplate(workspaceId);
     const { update: updateProperty, remove: removeProperty } =
         usePropertyMutations();
 
@@ -62,6 +64,14 @@ const PropertyPage = () => {
     // Delete modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+    const handleBack = () => {
+        if (workspaceId) {
+            navigate(`/workspaces/${workspaceId}`);
+        } else {
+            navigate("/workspaces");
+        }
+    };
+
     if (isLoading) return <LoadingMask />;
     if (error || !prop) {
         return (
@@ -71,7 +81,7 @@ const PropertyPage = () => {
                 </p>
                 <button
                     type="button"
-                    onClick={() => navigate("/property")}
+                    onClick={handleBack}
                     className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm"
                 >
                     返回列表
@@ -81,7 +91,7 @@ const PropertyPage = () => {
     }
 
     // Must have / Nice to have stats
-    const currentConditions = prop.conditions?.[0] || {
+    const currentConditions = prop.conditions || {
         mustHaves: [],
         niceToHaves: [],
     };
@@ -110,14 +120,14 @@ const PropertyPage = () => {
             c.id === conditionId ? { ...c, checked: !c.checked } : c,
         );
 
-        const updatedConditions: PropertyCondition[] = [
-            {
-                mustHaves:
-                    type === "mustHaves" ? updatedMustHaves : mustHavesList,
-                niceToHaves:
-                    type === "niceToHaves" ? updatedNiceToHaves : niceToHavesList,
-            },
-        ];
+        const updatedConditions: PropertyCondition = {
+            mustHaves:
+                type === "mustHaves" ? updatedMustHaves : mustHavesList,
+            niceToHaves:
+                type === "niceToHaves"
+                    ? updatedNiceToHaves
+                    : niceToHavesList,
+        };
 
         const newScore = calculateScore(updatedConditions);
 
@@ -144,13 +154,15 @@ const PropertyPage = () => {
                 existingCheckedMap.set(item.id, item.checked);
             });
 
-            const updatedMustHaves = conditionTemplate.mustHaves.map((item) => ({
-                ...item,
-                checked:
-                    existingCheckedMap.get(item.id) ??
-                    existingCheckedMap.get(item.text) ??
-                    false,
-            }));
+            const updatedMustHaves = conditionTemplate.mustHaves.map(
+                (item) => ({
+                    ...item,
+                    checked:
+                        existingCheckedMap.get(item.id) ??
+                        existingCheckedMap.get(item.text) ??
+                        false,
+                }),
+            );
 
             const updatedNiceToHaves = conditionTemplate.niceToHaves.map(
                 (item) => ({
@@ -162,12 +174,10 @@ const PropertyPage = () => {
                 }),
             );
 
-            const updatedConditions: PropertyCondition[] = [
-                {
-                    mustHaves: updatedMustHaves,
-                    niceToHaves: updatedNiceToHaves,
-                },
-            ];
+            const updatedConditions: PropertyCondition = {
+                mustHaves: updatedMustHaves,
+                niceToHaves: updatedNiceToHaves,
+            };
 
             const newScore = calculateScore(updatedConditions);
 
@@ -257,7 +267,7 @@ const PropertyPage = () => {
 
     const handleConfirmDeleteProperty = async () => {
         await removeProperty.mutateAsync(prop.id);
-        navigate("/property");
+        handleBack();
     };
 
     return (
@@ -272,7 +282,7 @@ const PropertyPage = () => {
                         : `${prop.city} ${prop.district}`
                 }
                 score={prop.score}
-                onBackBtnClick={() => navigate("/property")}
+                onBackBtnClick={handleBack}
                 onEditBtnClick={handleOpenEditModal}
                 onDeleteBtnClick={() => setIsDeleteModalOpen(true)}
             />

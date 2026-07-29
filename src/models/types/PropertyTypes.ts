@@ -33,7 +33,7 @@ export type PropertyVM = Omit<
     PropertyRow,
     "conditions" | "transactions" | "roomImages"
 > & {
-    conditions?: PropertyCondition[] | null;
+    conditions?: PropertyCondition | null;
     transactions?: PropertyTransaction[] | null;
     roomImages?: PropertyRoomImage[] | null;
 };

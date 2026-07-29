@@ -12,7 +12,7 @@ import type {
 export const toPropertyVM = (row: PropertyRow): PropertyVM => {
     return {
         ...row,
-        conditions: parseJsonOrString<PropertyCondition[]>(row.conditions),
+        conditions: parseJsonOrString<PropertyCondition>(row.conditions),
         transactions: parseJsonOrString<PropertyTransaction[]>(
             row.transactions,
         ),
@@ -55,6 +55,7 @@ export const toPropertyInsert = (vm: PropertyVM): PropertyRowInsert => {
         transactions: JSON.stringify(vm.transactions),
         unit: vm.unit,
         user_id: vm.user_id,
+        workspace_id: vm.workspace_id,
     };
 };
 
@@ -91,5 +92,6 @@ export const toPropertyUpdate = (
         transactions: JSON.stringify(vm.transactions),
         unit: vm.unit,
         user_id: vm.user_id,
+        workspace_id: vm.workspace_id,
     };
 };

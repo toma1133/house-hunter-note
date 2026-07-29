@@ -5,24 +5,24 @@ import {
     DEFAULT_CONDITIONS_TEMPLATE,
 } from "../models/types/ConditionTemplateTypes";
 
-const useConditionTemplate = (userId: string | undefined) => {
+const useConditionTemplate = (
+    workspaceId?: string | null,
+) => {
     return useQuery<ConditionTemplateVM>({
-        queryKey: ["conditionTemplate", userId],
+        queryKey: ["conditionTemplate", workspaceId],
         queryFn: async () => {
-            if (!userId) {
-                return { user_id: "", ...DEFAULT_CONDITIONS_TEMPLATE };
-            }
-            const existing = await conditionTemplateRepo.getByUserId(userId);
+            const existing = await conditionTemplateRepo.getTemplate(
+                workspaceId,
+            );
             if (existing) {
                 return existing;
             }
             return {
-                user_id: userId,
+                workspace_id: workspaceId || null,
                 mustHaves: [...DEFAULT_CONDITIONS_TEMPLATE.mustHaves],
                 niceToHaves: [...DEFAULT_CONDITIONS_TEMPLATE.niceToHaves],
             };
         },
-        enabled: !!userId,
         staleTime: 60_000,
         placeholderData: keepPreviousData,
     });

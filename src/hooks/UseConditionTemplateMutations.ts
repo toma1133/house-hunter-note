@@ -8,12 +8,10 @@ const useConditionTemplateMutations = () => {
         mutationKey: ["conditionTemplate", "save"],
         mutationFn: (payload: ConditionTemplateVM) =>
             conditionTemplateRepo.upsert(payload),
-        onSuccess: (data) => {
-            if (data?.user_id) {
-                qc.invalidateQueries({
-                    queryKey: ["conditionTemplate", data.user_id],
-                });
-            }
+        onSuccess: () => {
+            qc.invalidateQueries({
+                queryKey: ["conditionTemplate"],
+            });
         },
     });
 

@@ -3,17 +3,22 @@ import {
     ArrowLeft,
     Edit3,
     Home,
+    LogOut,
     Plus,
     Settings2,
     Trash2,
+    Users,
 } from "lucide-react";
 import ToogleThemeBtn from "./ToggleThemeBtn";
+import useAuth from "../../hooks/UseAuth";
 
 type PageHeaderProps = {
     mode: "list" | "detail";
     // List mode props
     onAddBtnClick?: MouseEventHandler<HTMLButtonElement>;
+    addBtnLabel?: string;
     onSettingsBtnClick?: MouseEventHandler<HTMLButtonElement>;
+    onShareBtnClick?: MouseEventHandler<HTMLButtonElement>;
     // Detail mode props
     onBackBtnClick?: MouseEventHandler<HTMLButtonElement>;
     score?: number;
@@ -26,7 +31,9 @@ type PageHeaderProps = {
 const PageHeader = ({
     mode,
     onAddBtnClick,
+    addBtnLabel,
     onSettingsBtnClick,
+    onShareBtnClick,
     onBackBtnClick,
     score,
     title,
@@ -34,20 +41,32 @@ const PageHeader = ({
     onEditBtnClick,
     onDeleteBtnClick,
 }: PageHeaderProps) => {
+    const { signOut } = useAuth();
+
     return (
         <header className="sticky top-2 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl py-3 rounded-2xl px-4 border border-slate-200/60 dark:border-slate-800/80 shadow-md shadow-slate-200/20 dark:shadow-slate-950/20 transition-all duration-300 mb-6">
             <div className="flex justify-between items-center">
                 {mode === "list" ? (
                     <div className="flex items-center gap-2.5">
+                        {onBackBtnClick && (
+                            <button
+                                type="button"
+                                onClick={onBackBtnClick}
+                                className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0 mr-1"
+                                title="返回"
+                            >
+                                <ArrowLeft size={18} />
+                            </button>
+                        )}
                         <div className="p-2 bg-blue-600/10 dark:bg-blue-500/20 rounded-xl text-blue-600 dark:text-blue-400">
                             <Home size={22} className="sm:w-6 sm:h-6" />
                         </div>
                         <div>
                             <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent tracking-tight">
-                                看屋筆記
+                                {title || "我的看房計畫"}
                             </h1>
                             <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest hidden sm:block">
-                                House Hunter Note
+                                {title ? "看屋筆記 / House Hunter Note" : "House Hunter Note"}
                             </p>
                         </div>
                     </div>
@@ -78,14 +97,26 @@ const PageHeader = ({
                 <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     {mode === "list" ? (
                         <>
-                            <button
-                                type="button"
-                                onClick={onAddBtnClick}
-                                className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 font-bold text-xs sm:text-sm active:scale-95"
-                            >
-                                <Plus size={18} />
-                                <span>新增紀錄</span>
-                            </button>
+                            {onAddBtnClick && (
+                                <button
+                                    type="button"
+                                    onClick={onAddBtnClick}
+                                    className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 font-bold text-xs sm:text-sm active:scale-95"
+                                >
+                                    <Plus size={18} />
+                                    <span>{addBtnLabel || "新增紀錄"}</span>
+                                </button>
+                            )}
+                            {onShareBtnClick && (
+                                <button
+                                    type="button"
+                                    onClick={onShareBtnClick}
+                                    className="p-2 sm:p-2.5 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 rounded-xl transition-colors"
+                                    title="共享計畫與成員"
+                                >
+                                    <Users size={20} />
+                                </button>
+                            )}
                             <ToogleThemeBtn />
                             {onSettingsBtnClick && (
                                 <button
@@ -97,6 +128,14 @@ const PageHeader = ({
                                     <Settings2 size={20} />
                                 </button>
                             )}
+                            <button
+                                type="button"
+                                onClick={() => signOut()}
+                                className="p-2 sm:p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+                                title="登出"
+                            >
+                                <LogOut size={20} />
+                            </button>
                         </>
                     ) : (
                         <>
@@ -155,6 +194,14 @@ const PageHeader = ({
                                     <Settings2 size={18} />
                                 </button>
                             )}
+                            <button
+                                type="button"
+                                onClick={() => signOut()}
+                                className="p-2 sm:p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+                                title="登出"
+                            >
+                                <LogOut size={18} />
+                            </button>
                         </>
                     )}
                 </div>

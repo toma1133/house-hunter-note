@@ -12,7 +12,7 @@ export const toConditionTemplateVM = (
 ): ConditionTemplateVM => {
     return {
         id: row.id,
-        user_id: row.user_id,
+        workspace_id: row.workspace_id,
         mustHaves: parseJsonOrString<ConditionItem[]>(row.must_haves) || [],
         niceToHaves: parseJsonOrString<ConditionItem[]>(row.nice_to_haves) || [],
         created_at: row.created_at,
@@ -25,7 +25,7 @@ export const toConditionTemplateInsert = (
 ): ConditionTemplateRowInsert => {
     return {
         ...(vm.id ? { id: vm.id } : {}),
-        user_id: vm.user_id,
+        workspace_id: vm.workspace_id ?? null,
         must_haves: JSON.stringify(vm.mustHaves),
         nice_to_haves: JSON.stringify(vm.niceToHaves),
     };
@@ -35,7 +35,7 @@ export const toConditionTemplateUpdate = (
     vm: Partial<ConditionTemplateVM>,
 ): ConditionTemplateRowUpdate => {
     return {
-        ...(vm.user_id ? { user_id: vm.user_id } : {}),
+        workspace_id: vm.workspace_id,
         must_haves: vm.mustHaves ? JSON.stringify(vm.mustHaves) : undefined,
         nice_to_haves: vm.niceToHaves
             ? JSON.stringify(vm.niceToHaves)
