@@ -45,9 +45,9 @@ const PageHeader = ({
 
     return (
         <header className="sticky top-2 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl py-3 rounded-2xl px-4 border border-slate-200/60 dark:border-slate-800/80 shadow-md shadow-slate-200/20 dark:shadow-slate-950/20 transition-all duration-300 mb-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-2">
                 {mode === "list" ? (
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         {onBackBtnClick && (
                             <button
                                 type="button"
@@ -58,20 +58,20 @@ const PageHeader = ({
                                 <ArrowLeft size={18} />
                             </button>
                         )}
-                        <div className="p-2 bg-blue-600/10 dark:bg-blue-500/20 rounded-xl text-blue-600 dark:text-blue-400">
+                        <div className="p-2 bg-blue-600/10 dark:bg-blue-500/20 rounded-xl text-blue-600 dark:text-blue-400 shrink-0 hidden sm:block">
                             <Home size={22} className="sm:w-6 sm:h-6" />
                         </div>
-                        <div>
-                            <h1 className="text-xl sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent tracking-tight">
+                        <div className="min-w-0 flex-1">
+                            <h1 className="text-lg sm:text-2xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent tracking-tight truncate">
                                 {title || "我的看房計畫"}
                             </h1>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest hidden sm:block">
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest hidden sm:block truncate">
                                 {title ? "看屋筆記 / House Hunter Note" : "House Hunter Note"}
                             </p>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <button
                             type="button"
                             onClick={onBackBtnClick}
@@ -80,12 +80,12 @@ const PageHeader = ({
                             <ArrowLeft size={18} />
                             <span className="hidden sm:inline">返回列表</span>
                         </button>
-                        <div className="min-w-0 truncate">
+                        <div className="min-w-0 flex-1">
                             <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate tracking-tight">
                                 {title || "物件詳細紀錄"}
                             </h1>
                             {subtitle && (
-                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:block">
                                     {subtitle}
                                 </p>
                             )}
@@ -101,10 +101,10 @@ const PageHeader = ({
                                 <button
                                     type="button"
                                     onClick={onAddBtnClick}
-                                    className="px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 font-bold text-xs sm:text-sm active:scale-95"
+                                    className="p-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-1.5 font-bold text-xs sm:text-sm active:scale-95 shrink-0"
                                 >
                                     <Plus size={18} />
-                                    <span>{addBtnLabel || "新增紀錄"}</span>
+                                    <span className="hidden sm:inline">{addBtnLabel || "新增紀錄"}</span>
                                 </button>
                             )}
                             {onShareBtnClick && (
