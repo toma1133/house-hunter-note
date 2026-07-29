@@ -133,6 +133,7 @@ const PropertiesPage = () => {
             score: 0,
             totalPrice: 0,
             totalPing: 0,
+            totalUnits: 0,
             transactions: [],
             unit: "",
             user_id: session ? session.user.id : "",

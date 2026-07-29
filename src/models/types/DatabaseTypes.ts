@@ -42,6 +42,7 @@ export type Database = {
                     score: number;
                     totalPrice: number;
                     totalPing: number;
+                    totalUnits: number;
                     transactions: Json;
                     unit: string;
                     user_id: string;
@@ -73,6 +74,7 @@ export type Database = {
                     score?: number | null;
                     totalPrice?: number | null;
                     totalPing?: number | null;
+                    totalUnits?: number | null;
                     transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;
@@ -104,6 +106,7 @@ export type Database = {
                     score?: number | null;
                     totalPrice?: number | null;
                     totalPing?: number | null;
+                    totalUnits?: number | null;
                     transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;

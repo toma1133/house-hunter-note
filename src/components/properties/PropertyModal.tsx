@@ -131,7 +131,7 @@ const PropertyModal = ({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                    <div className="md:col-span-2">
+                    <div>
                         <label
                             htmlFor="community"
                             className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
@@ -146,6 +146,22 @@ const PropertyModal = ({
                             value={formData.community}
                             onChange={onFormChange}
                             placeholder="例如：藍天白雲社區"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="totalUnits"
+                            className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                        >
+                            總戶數 (戶)
+                        </label>
+                        <input
+                            type="number"
+                            name="totalUnits"
+                            className="w-full p-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all shadow-sm"
+                            value={formData.totalUnits || ""}
+                            onChange={onFormChange}
+                            placeholder="120"
                         />
                     </div>
                     <div>

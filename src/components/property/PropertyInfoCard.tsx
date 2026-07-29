@@ -85,6 +85,14 @@ const PropertyInfoCard = ({
                             {property.landZoning || "-"}
                         </span>
                     </div>
+                    <div className="flex flex-col justify-center pl-2">
+                        <span className="text-[11px] text-slate-400 uppercase font-bold tracking-wider">
+                            社區總戶數
+                        </span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
+                            {property.totalUnits ? `${property.totalUnits} 戶` : "-"}
+                        </span>
+                    </div>
 
                     <div className="col-span-2 md:col-span-3 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                         <div className="flex flex-col">
