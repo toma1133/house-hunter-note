@@ -20,7 +20,6 @@ export type Database = {
                     buildingType: string;
                     city: string;
                     community: string;
-                    conditions: Json;
                     coverImage: string;
                     created_at: string | null;
                     district: string;
@@ -38,12 +37,10 @@ export type Database = {
                     parking: string;
                     parkingPing: number;
                     publicRatio: number;
-                    roomImages: Json;
                     score: number;
                     totalPrice: number;
                     totalPing: number;
                     totalUnits: number;
-                    transactions: Json;
                     unit: string;
                     user_id: string;
                     workspace_id: string | null;
@@ -53,7 +50,6 @@ export type Database = {
                     buildingType?: string | null;
                     city?: string | null;
                     community?: string | null;
-                    conditions?: Json | null;
                     coverImage?: string | null;
                     created_at?: string | null;
                     district?: string | null;
@@ -71,12 +67,10 @@ export type Database = {
                     parking?: string | null;
                     parkingPing?: number | null;
                     publicRatio?: number | null;
-                    roomImages?: Json | null;
                     score?: number | null;
                     totalPrice?: number | null;
                     totalPing?: number | null;
                     totalUnits?: number | null;
-                    transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;
                     workspace_id?: string | null;
@@ -86,7 +80,6 @@ export type Database = {
                     buildingType?: string | null;
                     city?: string | null;
                     community?: string | null;
-                    conditions?: Json | null;
                     coverImage?: string | null;
                     created_at?: string | null;
                     district?: string | null;
@@ -104,40 +97,158 @@ export type Database = {
                     parking?: string | null;
                     parkingPing?: number | null;
                     publicRatio?: number | null;
-                    roomImages?: Json | null;
                     score?: number | null;
                     totalPrice?: number | null;
                     totalPing?: number | null;
                     totalUnits?: number | null;
-                    transactions?: Json | null;
                     unit?: string | null;
                     user_id?: string;
                     workspace_id?: string | null;
                 };
                 Relationships: [];
             };
-            condition_templates: {
+            conditions: {
                 Row: {
                     id: string;
                     workspace_id: string | null;
-                    must_haves: Json;
-                    nice_to_haves: Json;
+                    text: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    workspace_id?: string | null;
+                    text: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    workspace_id?: string | null;
+                    text?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            preset_conditions: {
+                Row: {
+                    id: string;
+                    preset_id: string;
+                    condition_id: string;
+                    type: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    preset_id: string;
+                    condition_id: string;
+                    type: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    preset_id?: string;
+                    condition_id?: string;
+                    type?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            property_conditions: {
+                Row: {
+                    id: string;
+                    property_id: string;
+                    condition_id: string;
+                    type: string;
+                    is_checked: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    property_id: string;
+                    condition_id: string;
+                    type: string;
+                    is_checked?: boolean;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    property_id?: string;
+                    condition_id?: string;
+                    type?: string;
+                    is_checked?: boolean;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            property_room_images: {
+                Row: {
+                    id: string;
+                    property_id: string;
+                    name: string | null;
+                    url: string;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    property_id: string;
+                    name?: string | null;
+                    url: string;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    property_id?: string;
+                    name?: string | null;
+                    url?: string;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            property_transactions: {
+                Row: {
+                    id: string;
+                    property_id: string;
+                    date: string | null;
+                    floor: string | null;
+                    total_price: number | null;
+                    unit_price: number | null;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    property_id: string;
+                    date?: string | null;
+                    floor?: string | null;
+                    total_price?: number | null;
+                    unit_price?: number | null;
+                    created_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    property_id?: string;
+                    date?: string | null;
+                    floor?: string | null;
+                    total_price?: number | null;
+                    unit_price?: number | null;
+                    created_at?: string;
+                };
+                Relationships: [];
+            };
+            condition_presets: {
+                Row: {
+                    id: string;
+                    workspace_id: string | null;
                     created_at: string;
                     updated_at: string;
                 };
                 Insert: {
                     id?: string;
                     workspace_id?: string | null;
-                    must_haves?: Json;
-                    nice_to_haves?: Json;
                     created_at?: string;
                     updated_at?: string;
                 };
                 Update: {
                     id?: string;
                     workspace_id?: string | null;
-                    must_haves?: Json;
-                    nice_to_haves?: Json;
                     created_at?: string;
                     updated_at?: string;
                 };

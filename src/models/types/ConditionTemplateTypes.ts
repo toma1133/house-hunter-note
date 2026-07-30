@@ -1,11 +1,14 @@
 import type { Tables, TablesInsert, TablesUpdate } from "./DatabaseTypes";
 
-export type ConditionTemplateRow = Tables<"condition_templates">;
-export type ConditionTemplateRowInsert = TablesInsert<"condition_templates">;
-export type ConditionTemplateRowUpdate = TablesUpdate<"condition_templates">;
+export type ConditionTemplateRow = Tables<"condition_presets">;
+export type ConditionTemplateRowInsert = TablesInsert<"condition_presets">;
+export type ConditionTemplateRowUpdate = TablesUpdate<"condition_presets">;
+
+export type TemplateConditionRow = Tables<"preset_conditions">;
 
 export type ConditionItem = {
-    id: string;
+    id: string; // ID of the preset_condition
+    condition_id: string; // ID of the condition dictionary entry
     text: string;
     checked: boolean;
 };

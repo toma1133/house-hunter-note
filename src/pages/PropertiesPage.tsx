@@ -67,12 +67,17 @@ const PropertiesPage = () => {
         mutationKey: ["properties", "property"],
     });
 
-    const isWorkspaceMutating = createWs.isPending || inviteMember.isPending || inviteAction.isPending;
+    const isWorkspaceMutating =
+        createWs.isPending || inviteMember.isPending || inviteAction.isPending;
 
     useEffect(() => {
         let timer: number | undefined;
         const shouldShow =
-            isPropertiesLoading || anyPropertyPending || mutatingCount > 0 || saveTemplate.isPending || isWorkspaceMutating;
+            isPropertiesLoading ||
+            anyPropertyPending ||
+            mutatingCount > 0 ||
+            saveTemplate.isPending ||
+            isWorkspaceMutating;
 
         if (shouldShow) {
             timer = window.setTimeout(() => setIsPageLoading(true), 150);
@@ -123,7 +128,7 @@ const PropertiesPage = () => {
     const initialPropertyState: PropertyVM = useMemo(
         () => ({
             address: "",
-            buildingType: "",
+            buildingType: "電梯大樓",
             city: "台北市",
             community: "",
             conditions: conditionTemplate
@@ -132,12 +137,10 @@ const PropertiesPage = () => {
                           ...c,
                           checked: false,
                       })),
-                      niceToHaves: conditionTemplate.niceToHaves.map(
-                          (c) => ({
-                              ...c,
-                              checked: false,
-                          }),
-                      ),
+                      niceToHaves: conditionTemplate.niceToHaves.map((c) => ({
+                          ...c,
+                          checked: false,
+                      })),
                   }
                 : null,
             coverImage: "",
@@ -148,13 +151,13 @@ const PropertiesPage = () => {
             houseAge: 0,
             id: crypto.randomUUID(),
             indoorPing: 0,
-            landZoning: "",
+            landZoning: "住宅區",
             layoutBalconies: 0,
             layoutBaths: 0,
             layoutHalls: 0,
             layoutRooms: 0,
             managementFee: 0,
-            parking: "",
+            parking: "無",
             parkingPing: 0,
             publicRatio: 0,
             roomImages: [],
