@@ -1,4 +1,4 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useState, useRef, useEffect } from "react";
 import {
     ArrowLeft,
     Edit3,
@@ -11,6 +11,7 @@ import {
     Bot,
     DownloadCloud,
     UploadCloud,
+    MoreVertical,
 } from "lucide-react";
 import ToogleThemeBtn from "./ToggleThemeBtn";
 import useAuth from "../../hooks/UseAuth";
@@ -51,6 +52,18 @@ const PageHeader = ({
     onDeleteBtnClick,
 }: PageHeaderProps) => {
     const { signOut } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
         <header className="sticky top-2 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl py-3 rounded-2xl px-4 border border-slate-200/60 dark:border-slate-800/80 shadow-md shadow-slate-200/20 dark:shadow-slate-950/20 transition-all duration-300 mb-6">
@@ -116,134 +129,253 @@ const PageHeader = ({
                                     <span className="hidden sm:inline">{addBtnLabel || "新增紀錄"}</span>
                                 </button>
                             )}
-                            {onShareBtnClick && (
+                            
+                            {/* Desktop Actions */}
+                            <div className="hidden sm:flex items-center gap-2">
+                                {onShareBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onShareBtnClick}
+                                        className="p-2.5 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 rounded-xl transition-colors"
+                                        title="共享計畫與成員"
+                                    >
+                                        <Users size={20} />
+                                    </button>
+                                )}
+                                {onExportAiBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onExportAiBtnClick}
+                                        className="p-2.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 rounded-xl transition-colors flex items-center gap-1"
+                                        title="匯出 AI 提示詞"
+                                    >
+                                        <Bot size={20} />
+                                        <DownloadCloud size={14} />
+                                    </button>
+                                )}
+                                {onImportAiBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onImportAiBtnClick}
+                                        className="p-2.5 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-800/50 rounded-xl transition-colors flex items-center gap-1"
+                                        title="匯入 AI 產生的結果"
+                                    >
+                                        <Bot size={20} />
+                                        <UploadCloud size={14} />
+                                    </button>
+                                )}
+                                {onSettingsBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onSettingsBtnClick}
+                                        className="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                        title="預設評分條件設定"
+                                    >
+                                        <Settings2 size={20} />
+                                    </button>
+                                )}
                                 <button
                                     type="button"
-                                    onClick={onShareBtnClick}
-                                    className="p-2 sm:p-2.5 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 rounded-xl transition-colors"
-                                    title="共享計畫與成員"
+                                    onClick={() => signOut()}
+                                    className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+                                    title="登出"
                                 >
-                                    <Users size={20} />
+                                    <LogOut size={20} />
                                 </button>
-                            )}
-                            {onExportAiBtnClick && (
-                                <button
-                                    type="button"
-                                    onClick={onExportAiBtnClick}
-                                    className="p-2 sm:p-2.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 rounded-xl transition-colors flex items-center gap-1"
-                                    title="匯出 AI 提示詞"
-                                >
-                                    <Bot size={20} />
-                                    <DownloadCloud size={14} className="hidden sm:block" />
-                                </button>
-                            )}
-                            {onImportAiBtnClick && (
-                                <button
-                                    type="button"
-                                    onClick={onImportAiBtnClick}
-                                    className="p-2 sm:p-2.5 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-800/50 rounded-xl transition-colors flex items-center gap-1"
-                                    title="匯入 AI 產生的結果"
-                                >
-                                    <Bot size={20} />
-                                    <UploadCloud size={14} className="hidden sm:block" />
-                                </button>
-                            )}
+                            </div>
+
                             <ToogleThemeBtn />
-                            {onSettingsBtnClick && (
+
+                            {/* Mobile Menu Toggle */}
+                            <div className="relative sm:hidden" ref={menuRef}>
                                 <button
                                     type="button"
-                                    onClick={onSettingsBtnClick}
-                                    className="p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-                                    title="預設評分條件設定"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
                                 >
-                                    <Settings2 size={20} />
+                                    <MoreVertical size={20} />
                                 </button>
-                            )}
-                            <button
-                                type="button"
-                                onClick={() => signOut()}
-                                className="p-2 sm:p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
-                                title="登出"
-                            >
-                                <LogOut size={20} />
-                            </button>
+                                
+                                {isMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 flex flex-col">
+                                        {onShareBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onShareBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Users size={16} /> 共享計畫與成員
+                                            </button>
+                                        )}
+                                        {onExportAiBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onExportAiBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Bot size={16} /> <span className="flex items-center gap-1">匯出 AI 提示詞 <DownloadCloud size={14} /></span>
+                                            </button>
+                                        )}
+                                        {onImportAiBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onImportAiBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Bot size={16} /> <span className="flex items-center gap-1">匯入 AI 結果 <UploadCloud size={14} /></span>
+                                            </button>
+                                        )}
+                                        {onSettingsBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onSettingsBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Settings2 size={16} /> 評分條件設定
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => { signOut(); setIsMenuOpen(false); }}
+                                            className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                        >
+                                            <LogOut size={16} /> 登出
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </>
                     ) : (
                         <>
-                            {totalPrice !== undefined && (
-                                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 mr-1">
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
-                                        總價
-                                    </span>
-                                    <span className="text-lg sm:text-xl font-black text-slate-700 dark:text-slate-200">
-                                        {totalPrice} 萬
-                                    </span>
-                                </div>
-                            )}
+                            <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar py-1">
+                                {totalPrice !== undefined && (
+                                    <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 shrink-0">
+                                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
+                                            總價
+                                        </span>
+                                        <span className="text-sm sm:text-xl font-black text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                                            {totalPrice} 萬
+                                        </span>
+                                    </div>
+                                )}
 
-                            {score !== undefined && (
-                                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 mr-1">
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
-                                        Score
-                                    </span>
-                                    <span
-                                        className={`text-lg sm:text-xl font-black ${
-                                            score >= 80
-                                                ? "text-emerald-500"
-                                                : score >= 60
-                                                  ? "text-blue-500"
-                                                  : score > 0
-                                                    ? "text-amber-500"
-                                                    : "text-slate-400"
-                                        }`}
+                                {score !== undefined && (
+                                    <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 shrink-0">
+                                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
+                                            Score
+                                        </span>
+                                        <span
+                                            className={`text-sm sm:text-xl font-black whitespace-nowrap ${
+                                                score >= 80
+                                                    ? "text-emerald-500"
+                                                    : score >= 60
+                                                    ? "text-blue-500"
+                                                    : score > 0
+                                                        ? "text-amber-500"
+                                                        : "text-slate-400"
+                                            }`}
+                                        >
+                                            {score}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Desktop Actions */}
+                            <div className="hidden sm:flex items-center gap-2">
+                                {onEditBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onEditBtnClick}
+                                        className="p-2.5 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-xl transition-colors"
+                                        title="編輯物件"
                                     >
-                                        {score}
-                                    </span>
-                                </div>
-                            )}
+                                        <Edit3 size={18} />
+                                    </button>
+                                )}
 
-                            {onEditBtnClick && (
+                                {onDeleteBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onDeleteBtnClick}
+                                        className="p-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-xl transition-colors"
+                                        title="刪除物件"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                )}
+
+                                {onSettingsBtnClick && (
+                                    <button
+                                        type="button"
+                                        onClick={onSettingsBtnClick}
+                                        className="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                        title="預設評分條件設定"
+                                    >
+                                        <Settings2 size={18} />
+                                    </button>
+                                )}
                                 <button
                                     type="button"
-                                    onClick={onEditBtnClick}
-                                    className="p-2 sm:p-2.5 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-xl transition-colors"
-                                    title="編輯物件"
+                                    onClick={() => signOut()}
+                                    className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+                                    title="登出"
                                 >
-                                    <Edit3 size={18} />
+                                    <LogOut size={18} />
                                 </button>
-                            )}
-
-                            {onDeleteBtnClick && (
-                                <button
-                                    type="button"
-                                    onClick={onDeleteBtnClick}
-                                    className="p-2 sm:p-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-800/50 rounded-xl transition-colors"
-                                    title="刪除物件"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            )}
+                            </div>
 
                             <ToogleThemeBtn />
 
-                            {onSettingsBtnClick && (
+                            {/* Mobile Menu Toggle */}
+                            <div className="relative sm:hidden" ref={menuRef}>
                                 <button
                                     type="button"
-                                    onClick={onSettingsBtnClick}
-                                    className="p-2 sm:p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-                                    title="預設評分條件設定"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
                                 >
-                                    <Settings2 size={18} />
+                                    <MoreVertical size={20} />
                                 </button>
-                            )}
-                            <button
-                                type="button"
-                                onClick={() => signOut()}
-                                className="p-2 sm:p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
-                                title="登出"
-                            >
-                                <LogOut size={18} />
-                            </button>
+                                
+                                {isMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 flex flex-col">
+                                        {onEditBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onEditBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Edit3 size={16} /> 編輯物件
+                                            </button>
+                                        )}
+                                        {onDeleteBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onDeleteBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                            >
+                                                <Trash2 size={16} /> 刪除物件
+                                            </button>
+                                        )}
+                                        {onSettingsBtnClick && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { onSettingsBtnClick(e); setIsMenuOpen(false); }}
+                                                className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                            >
+                                                <Settings2 size={16} /> 評分條件設定
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => { signOut(); setIsMenuOpen(false); }}
+                                            className="w-full px-4 py-2 text-left flex items-center gap-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                        >
+                                            <LogOut size={16} /> 登出
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </>
                     )}
                 </div>
