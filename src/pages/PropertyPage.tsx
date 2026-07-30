@@ -1,5 +1,5 @@
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { useNavigate, useParams, useOutletContext } from "react-router-dom";
 import useAuth from "../hooks/UseAuth";
 import useProperty from "../hooks/UseProperty";
 import usePropertyMutations from "../hooks/UsePropertyMutations";
@@ -10,6 +10,7 @@ import type {
     PropertyTransaction,
     PropertyVM,
 } from "../models/types/PropertyTypes";
+import type LayoutContextType from "../models/types/LayoutContextTypes";
 import PropertyModal from "../components/properties/PropertyModal";
 import DeleteModal from "../components/common/DeleteModal";
 import LoadingMask from "../components/common/LoadingMask";
@@ -48,11 +49,30 @@ const PropertyPage = () => {
     const userId = session?.user?.id;
     const { data: prop, isLoading, error } = useProperty(id);
     const { data: conditionTemplate } = useConditionTemplate(workspaceId);
-    const { update: updateProperty, remove: removeProperty } =
+    const { update: updateProperty, remove: removeProperty, anyPending } =
         usePropertyMutations();
 
-    // Template sync state
+    const { setIsPageLoading } = useOutletContext<LayoutContextType>();
     const [isSyncing, setIsSyncing] = useState(false);
+
+    useEffect(() => {
+        let timer: number | undefined;
+        // isSyncing is local state for template sync, we can also show loading mask for it
+        const shouldShow = isLoading || anyPending || isSyncing;
+
+        if (shouldShow) {
+            timer = window.setTimeout(() => setIsPageLoading(true), 150);
+        } else {
+            setIsPageLoading(false);
+        }
+
+        return () => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+            setIsPageLoading(false);
+        };
+    }, [isLoading, anyPending, isSyncing, setIsPageLoading]);
 
     // Image preview state
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -282,6 +302,7 @@ const PropertyPage = () => {
                         : `${prop.city} ${prop.district}`
                 }
                 score={prop.score}
+                totalPrice={prop.totalPrice}
                 onBackBtnClick={handleBack}
                 onEditBtnClick={handleOpenEditModal}
                 onDeleteBtnClick={() => setIsDeleteModalOpen(true)}

@@ -67,10 +67,12 @@ const PropertiesPage = () => {
         mutationKey: ["properties", "property"],
     });
 
+    const isWorkspaceMutating = createWs.isPending || inviteMember.isPending || inviteAction.isPending;
+
     useEffect(() => {
         let timer: number | undefined;
         const shouldShow =
-            isPropertiesLoading || anyPropertyPending || mutatingCount > 0;
+            isPropertiesLoading || anyPropertyPending || mutatingCount > 0 || saveTemplate.isPending || isWorkspaceMutating;
 
         if (shouldShow) {
             timer = window.setTimeout(() => setIsPageLoading(true), 150);
@@ -88,6 +90,8 @@ const PropertiesPage = () => {
         isPropertiesLoading,
         anyPropertyPending,
         mutatingCount,
+        saveTemplate.isPending,
+        isWorkspaceMutating,
         setIsPageLoading,
     ]);
 

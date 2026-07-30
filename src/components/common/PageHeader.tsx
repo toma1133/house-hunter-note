@@ -24,6 +24,7 @@ type PageHeaderProps = {
     score?: number;
     title?: string;
     subtitle?: string;
+    totalPrice?: number;
     onEditBtnClick?: MouseEventHandler<HTMLButtonElement>;
     onDeleteBtnClick?: MouseEventHandler<HTMLButtonElement>;
 };
@@ -38,6 +39,7 @@ const PageHeader = ({
     score,
     title,
     subtitle,
+    totalPrice,
     onEditBtnClick,
     onDeleteBtnClick,
 }: PageHeaderProps) => {
@@ -139,6 +141,17 @@ const PageHeader = ({
                         </>
                     ) : (
                         <>
+                            {totalPrice !== undefined && (
+                                <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 mr-1">
+                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
+                                        總價
+                                    </span>
+                                    <span className="text-lg sm:text-xl font-black text-slate-700 dark:text-slate-200">
+                                        {totalPrice} 萬
+                                    </span>
+                                </div>
+                            )}
+
                             {score !== undefined && (
                                 <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-700/60 mr-1">
                                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider hidden md:inline">
