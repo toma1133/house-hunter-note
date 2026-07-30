@@ -52,6 +52,7 @@ const ConditionModal = ({
                     ...prev,
                     ...wsMusts.map((item) => ({
                         id: crypto.randomUUID(),
+                        condition_id: item.condition_id || "",
                         text: item.text,
                         checked: false,
                     })),
@@ -63,6 +64,7 @@ const ConditionModal = ({
                     ...prev,
                     ...wsNices.map((item) => ({
                         id: crypto.randomUUID(),
+                        condition_id: item.condition_id || "",
                         text: item.text,
                         checked: false,
                     })),
@@ -87,6 +89,7 @@ const ConditionModal = ({
                 ...prev,
                 ...propMusts.map((item) => ({
                     id: crypto.randomUUID(),
+                    condition_id: item.condition_id || "",
                     text: item.text,
                     checked: false,
                 })),
@@ -98,6 +101,7 @@ const ConditionModal = ({
                 ...prev,
                 ...propNices.map((item) => ({
                     id: crypto.randomUUID(),
+                    condition_id: item.condition_id || "",
                     text: item.text,
                     checked: false,
                 })),
@@ -113,6 +117,7 @@ const ConditionModal = ({
             ...prev,
             {
                 id: crypto.randomUUID(),
+                condition_id: "",
                 text: newMustHaveText.trim(),
                 checked: false,
             },
@@ -131,6 +136,7 @@ const ConditionModal = ({
             ...prev,
             {
                 id: crypto.randomUUID(),
+                condition_id: "",
                 text: newNiceToHaveText.trim(),
                 checked: false,
             },
