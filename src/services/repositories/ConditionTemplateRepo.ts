@@ -28,7 +28,7 @@ export const conditionTemplateRepo = {
         if (error) throw error;
         if (!data) return null;
 
-        const presetConditions = (data.preset_conditions as any[]) || [];
+        const presetConditions = (data.preset_conditions as unknown as any[]) || [];
         const mustHaves = presetConditions
             .filter((pc) => pc.type === "must_have")
             .map((pc) => ({
