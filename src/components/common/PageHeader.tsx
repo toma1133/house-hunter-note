@@ -8,6 +8,9 @@ import {
     Settings2,
     Trash2,
     Users,
+    Bot,
+    DownloadCloud,
+    UploadCloud,
 } from "lucide-react";
 import ToogleThemeBtn from "./ToggleThemeBtn";
 import useAuth from "../../hooks/UseAuth";
@@ -19,6 +22,8 @@ type PageHeaderProps = {
     addBtnLabel?: string;
     onSettingsBtnClick?: MouseEventHandler<HTMLButtonElement>;
     onShareBtnClick?: MouseEventHandler<HTMLButtonElement>;
+    onExportAiBtnClick?: MouseEventHandler<HTMLButtonElement>;
+    onImportAiBtnClick?: MouseEventHandler<HTMLButtonElement>;
     // Detail mode props
     onBackBtnClick?: MouseEventHandler<HTMLButtonElement>;
     score?: number;
@@ -35,6 +40,8 @@ const PageHeader = ({
     addBtnLabel,
     onSettingsBtnClick,
     onShareBtnClick,
+    onExportAiBtnClick,
+    onImportAiBtnClick,
     onBackBtnClick,
     score,
     title,
@@ -117,6 +124,28 @@ const PageHeader = ({
                                     title="共享計畫與成員"
                                 >
                                     <Users size={20} />
+                                </button>
+                            )}
+                            {onExportAiBtnClick && (
+                                <button
+                                    type="button"
+                                    onClick={onExportAiBtnClick}
+                                    className="p-2 sm:p-2.5 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 rounded-xl transition-colors flex items-center gap-1"
+                                    title="匯出 AI 提示詞"
+                                >
+                                    <Bot size={20} />
+                                    <DownloadCloud size={14} className="hidden sm:block" />
+                                </button>
+                            )}
+                            {onImportAiBtnClick && (
+                                <button
+                                    type="button"
+                                    onClick={onImportAiBtnClick}
+                                    className="p-2 sm:p-2.5 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 hover:bg-teal-100 dark:hover:bg-teal-800/50 rounded-xl transition-colors flex items-center gap-1"
+                                    title="匯入 AI 產生的結果"
+                                >
+                                    <Bot size={20} />
+                                    <UploadCloud size={14} className="hidden sm:block" />
                                 </button>
                             )}
                             <ToogleThemeBtn />

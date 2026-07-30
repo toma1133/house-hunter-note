@@ -25,6 +25,13 @@ export const toPropertyVM = (row: any): PropertyVM => {
         floor: t.floor || "",
         totalPrice: t.total_price !== null ? String(t.total_price) : "",
         unitPrice: t.unit_price !== null ? String(t.unit_price) : "",
+        housePing: t.house_ping !== null ? String(t.house_ping) : "",
+        parkingPing: t.parking_ping !== null ? String(t.parking_ping) : "",
+        parkingPrice: t.parking_price !== null ? String(t.parking_price) : "",
+        unitPriceNoParking: t.unit_price_no_parking !== null ? String(t.unit_price_no_parking) : "",
+        layout: t.layout || "",
+        parkingType: t.parking_type || "",
+        notes: t.notes || "",
     }));
 
     const roomImages = (row.property_room_images || []).map((i: any) => ({

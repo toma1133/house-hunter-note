@@ -1,4 +1,5 @@
-import { Info, Plus, RotateCcw, Star } from "lucide-react";
+import { Info, Plus, RotateCcw, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { PropertyConditionDetail } from "../../models/types/PropertyTypes";
 
 type PropertyChecklistCardProps = {
@@ -31,6 +32,9 @@ const PropertyChecklistCard = ({
     onSyncTemplate,
     isSyncing,
 }: PropertyChecklistCardProps) => {
+    const [isMustHavesOpen, setIsMustHavesOpen] = useState(true);
+    const [isNiceToHavesOpen, setIsNiceToHavesOpen] = useState(true);
+
     return (
         <div className="space-y-6">
             {/* Score Tip & Sync Template Button */}
@@ -56,143 +60,157 @@ const PropertyChecklistCard = ({
                 </button>
             </div>
 
-            {/* Must Haves Checklist */}
-            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 p-5 flex justify-between items-end border-b border-red-100 dark:border-red-900/30">
-                    <div>
-                        <h3 className="text-lg sm:text-xl font-black text-red-600 dark:text-red-400 flex items-center gap-2">
-                            <Star
-                                size={20}
-                                className="fill-red-600 dark:fill-red-400"
-                            />{" "}
-                            必需項 (Must Have)
-                        </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Must Haves Checklist */}
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden h-fit">
+                    <div 
+                        className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 p-5 flex justify-between items-end border-b border-red-100 dark:border-red-900/30 cursor-pointer select-none"
+                        onClick={() => setIsMustHavesOpen(!isMustHavesOpen)}
+                    >
+                        <div>
+                            <h3 className="text-lg sm:text-xl font-black text-red-600 dark:text-red-400 flex items-center gap-2">
+                                <Star
+                                    size={20}
+                                    className="fill-red-600 dark:fill-red-400"
+                                />{" "}
+                                必需項 (Must Have)
+                                {isMustHavesOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            </h3>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400">
+                                {mustHaveChecked}
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-red-400 dark:text-red-500">
+                                /{mustHaveTotal} (70%)
+                            </span>
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <span className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400">
-                            {mustHaveChecked}
-                        </span>
-                        <span className="text-xs sm:text-sm font-bold text-red-400 dark:text-red-500">
-                            /{mustHaveTotal} (70%)
-                        </span>
+
+                    <div className="w-full bg-slate-100 dark:bg-slate-700/50 h-2">
+                        <div
+                            className="bg-gradient-to-r from-red-500 to-orange-500 h-2 transition-all duration-700 ease-out"
+                            style={{ width: `${mustProgress}%` }}
+                        />
                     </div>
-                </div>
 
-                <div className="w-full bg-slate-100 dark:bg-slate-700/50 h-2">
-                    <div
-                        className="bg-gradient-to-r from-red-500 to-orange-500 h-2 transition-all duration-700 ease-out"
-                        style={{ width: `${mustProgress}%` }}
-                    />
-                </div>
-
-                <div className="p-2">
-                    {mustHavesList.length === 0 ? (
-                        <p className="p-6 text-center text-slate-400 text-sm">
-                            尚未設定條件
-                        </p>
-                    ) : (
-                        mustHavesList.map((condition) => (
-                            <label
-                                key={condition.id}
-                                className={`flex items-start gap-4 p-4 cursor-pointer rounded-2xl transition-all m-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
-                                    condition.checked
-                                        ? "bg-red-50/50 dark:bg-red-900/10"
-                                        : ""
-                                }`}
-                            >
-                                <div className="relative flex items-start pt-1">
-                                    <input
-                                        type="checkbox"
-                                        className="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-600 text-red-500 focus:ring-red-500 dark:bg-slate-800 cursor-pointer transition-all"
-                                        checked={condition.checked}
-                                        onChange={() =>
-                                            onToggleCondition(
-                                                "mustHaves",
-                                                condition.id,
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <span
-                                    className={`text-sm sm:text-base flex-grow select-none transition-colors pt-0.5 ${
-                                        condition.checked
-                                            ? "text-slate-900 dark:text-white font-bold"
-                                            : "text-slate-600 dark:text-slate-400 font-medium"
-                                    }`}
-                                >
-                                    {condition.text}
-                                </span>
-                            </label>
-                        ))
+                    {isMustHavesOpen && (
+                        <div className="p-2 animate-in slide-in-from-top-2 duration-200">
+                            {mustHavesList.length === 0 ? (
+                                <p className="p-6 text-center text-slate-400 text-sm">
+                                    尚未設定條件
+                                </p>
+                            ) : (
+                                mustHavesList.map((condition) => (
+                                    <label
+                                        key={condition.id}
+                                        className={`flex items-start gap-4 p-4 cursor-pointer rounded-2xl transition-all m-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
+                                            condition.checked
+                                                ? "bg-red-50/50 dark:bg-red-900/10"
+                                                : ""
+                                        }`}
+                                    >
+                                        <div className="relative flex items-start pt-1">
+                                            <input
+                                                type="checkbox"
+                                                className="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-600 text-red-500 focus:ring-red-500 dark:bg-slate-800 cursor-pointer transition-all"
+                                                checked={condition.checked}
+                                                onChange={() =>
+                                                    onToggleCondition(
+                                                        "mustHaves",
+                                                        condition.id,
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <span
+                                            className={`text-sm sm:text-base flex-grow select-none transition-colors pt-0.5 ${
+                                                condition.checked
+                                                    ? "text-slate-900 dark:text-white font-bold"
+                                                    : "text-slate-600 dark:text-slate-400 font-medium"
+                                            }`}
+                                        >
+                                            {condition.text}
+                                        </span>
+                                    </label>
+                                ))
+                            )}
+                        </div>
                     )}
                 </div>
-            </div>
 
-            {/* Nice To Haves Checklist */}
-            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-8">
-                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 p-5 flex justify-between items-end border-b border-emerald-100 dark:border-emerald-900/30">
-                    <div>
-                        <h3 className="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-                            <Plus size={20} strokeWidth={3} /> 加分項 (Nice to
-                            Have)
-                        </h3>
+                {/* Nice To Haves Checklist */}
+                <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden h-fit mb-8 md:mb-0">
+                    <div 
+                        className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 p-5 flex justify-between items-end border-b border-emerald-100 dark:border-emerald-900/30 cursor-pointer select-none"
+                        onClick={() => setIsNiceToHavesOpen(!isNiceToHavesOpen)}
+                    >
+                        <div>
+                            <h3 className="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+                                <Plus size={20} strokeWidth={3} /> 加分項 (Nice to
+                                Have)
+                                {isNiceToHavesOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                            </h3>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                                {niceToHaveChecked}
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-emerald-400 dark:text-emerald-500">
+                                /{niceToHaveTotal} (30%)
+                            </span>
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                            {niceToHaveChecked}
-                        </span>
-                        <span className="text-xs sm:text-sm font-bold text-emerald-400 dark:text-emerald-500">
-                            /{niceToHaveTotal} (30%)
-                        </span>
+
+                    <div className="w-full bg-slate-100 dark:bg-slate-700/50 h-2">
+                        <div
+                            className="bg-gradient-to-r from-emerald-400 to-teal-500 h-2 transition-all duration-700 ease-out"
+                            style={{ width: `${niceProgress}%` }}
+                        />
                     </div>
-                </div>
 
-                <div className="w-full bg-slate-100 dark:bg-slate-700/50 h-2">
-                    <div
-                        className="bg-gradient-to-r from-emerald-400 to-teal-500 h-2 transition-all duration-700 ease-out"
-                        style={{ width: `${niceProgress}%` }}
-                    />
-                </div>
-
-                <div className="p-2">
-                    {niceToHavesList.length === 0 ? (
-                        <p className="p-6 text-center text-slate-400 text-sm">
-                            尚未設定條件
-                        </p>
-                    ) : (
-                        niceToHavesList.map((condition) => (
-                            <label
-                                key={condition.id}
-                                className={`flex items-start gap-4 p-4 cursor-pointer rounded-2xl transition-all m-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
-                                    condition.checked
-                                        ? "bg-emerald-50/50 dark:bg-emerald-900/10"
-                                        : ""
-                                }`}
-                            >
-                                <div className="relative flex items-start pt-1">
-                                    <input
-                                        type="checkbox"
-                                        className="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-600 text-emerald-500 focus:ring-emerald-500 dark:bg-slate-800 cursor-pointer transition-all"
-                                        checked={condition.checked}
-                                        onChange={() =>
-                                            onToggleCondition(
-                                                "niceToHaves",
-                                                condition.id,
-                                            )
-                                        }
-                                    />
-                                </div>
-                                <span
-                                    className={`text-sm sm:text-base flex-grow select-none transition-colors pt-0.5 ${
-                                        condition.checked
-                                            ? "text-slate-900 dark:text-white font-bold"
-                                            : "text-slate-600 dark:text-slate-400 font-medium"
-                                    }`}
-                                >
-                                    {condition.text}
-                                </span>
-                            </label>
-                        ))
+                    {isNiceToHavesOpen && (
+                        <div className="p-2 animate-in slide-in-from-top-2 duration-200">
+                            {niceToHavesList.length === 0 ? (
+                                <p className="p-6 text-center text-slate-400 text-sm">
+                                    尚未設定條件
+                                </p>
+                            ) : (
+                                niceToHavesList.map((condition) => (
+                                    <label
+                                        key={condition.id}
+                                        className={`flex items-start gap-4 p-4 cursor-pointer rounded-2xl transition-all m-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${
+                                            condition.checked
+                                                ? "bg-emerald-50/50 dark:bg-emerald-900/10"
+                                                : ""
+                                        }`}
+                                    >
+                                        <div className="relative flex items-start pt-1">
+                                            <input
+                                                type="checkbox"
+                                                className="w-5 h-5 rounded-lg border-slate-300 dark:border-slate-600 text-emerald-500 focus:ring-emerald-500 dark:bg-slate-800 cursor-pointer transition-all"
+                                                checked={condition.checked}
+                                                onChange={() =>
+                                                    onToggleCondition(
+                                                        "niceToHaves",
+                                                        condition.id,
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <span
+                                            className={`text-sm sm:text-base flex-grow select-none transition-colors pt-0.5 ${
+                                                condition.checked
+                                                    ? "text-slate-900 dark:text-white font-bold"
+                                                    : "text-slate-600 dark:text-slate-400 font-medium"
+                                            }`}
+                                        >
+                                            {condition.text}
+                                        </span>
+                                    </label>
+                                ))
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

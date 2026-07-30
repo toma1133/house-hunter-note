@@ -27,6 +27,13 @@ export type PropertyTransaction = {
     floor: string;
     totalPrice: string;
     unitPrice: string;
+    housePing?: string;
+    parkingPing?: string;
+    parkingPrice?: string;
+    unitPriceNoParking?: string;
+    layout?: string;
+    parkingType?: string;
+    notes?: string;
 };
 
 export type PropertyRoomImage = {

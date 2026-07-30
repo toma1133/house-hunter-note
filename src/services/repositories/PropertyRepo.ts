@@ -27,6 +27,13 @@ async function upsertRelations(propertyId: string, payload: Partial<PropertyVM>)
                 floor: tx.floor || null,
                 total_price: tx.totalPrice ? Number(tx.totalPrice) : null,
                 unit_price: tx.unitPrice ? Number(tx.unitPrice) : null,
+                house_ping: tx.housePing ? Number(tx.housePing) : null,
+                parking_ping: tx.parkingPing ? Number(tx.parkingPing) : null,
+                parking_price: tx.parkingPrice ? Number(tx.parkingPrice) : null,
+                unit_price_no_parking: tx.unitPriceNoParking ? Number(tx.unitPriceNoParking) : null,
+                layout: tx.layout || null,
+                parking_type: tx.parkingType || null,
+                notes: tx.notes || null,
             }));
             await supabaseClient.from("property_transactions").insert(txsToInsert);
         }

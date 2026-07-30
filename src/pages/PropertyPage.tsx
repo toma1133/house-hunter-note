@@ -218,6 +218,13 @@ const PropertyPage = () => {
         floor: string;
         totalPrice: string;
         unitPrice: string;
+        housePing?: string;
+        parkingPing?: string;
+        parkingPrice?: string;
+        unitPriceNoParking?: string;
+        layout?: string;
+        parkingType?: string;
+        notes?: string;
     }) => {
         const newTx: PropertyTransaction = {
             id: crypto.randomUUID(),
@@ -225,6 +232,13 @@ const PropertyPage = () => {
             floor: txData.floor.trim(),
             totalPrice: txData.totalPrice.trim(),
             unitPrice: txData.unitPrice.trim(),
+            housePing: txData.housePing?.trim(),
+            parkingPing: txData.parkingPing?.trim(),
+            parkingPrice: txData.parkingPrice?.trim(),
+            unitPriceNoParking: txData.unitPriceNoParking?.trim(),
+            layout: txData.layout?.trim(),
+            parkingType: txData.parkingType?.trim(),
+            notes: txData.notes?.trim(),
         };
 
         const updatedTransactions = [...(prop.transactions || []), newTx];
@@ -308,10 +322,10 @@ const PropertyPage = () => {
                 onDeleteBtnClick={() => setIsDeleteModalOpen(true)}
             />
 
-            {/* Main Grid Content for Desktop */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Left Column: Property Info & Photos & Transactions */}
-                <div className="lg:col-span-7 space-y-6">
+            {/* Main Content (Full Width Stack) */}
+            <div className="flex flex-col gap-6">
+                {/* Property Info & Photos & Transactions */}
+                <div className="space-y-6">
                     <PropertyInfoCard
                         property={prop}
                         onImageClick={(url) => setPreviewImage(url)}
@@ -330,8 +344,8 @@ const PropertyPage = () => {
                     />
                 </div>
 
-                {/* Right Column: Conditions Checklist & Scoring */}
-                <div className="lg:col-span-5 space-y-6">
+                {/* Conditions Checklist & Scoring (Now at bottom) */}
+                <div className="space-y-6">
                     <PropertyChecklistCard
                         mustHavesList={mustHavesList}
                         niceToHavesList={niceToHavesList}

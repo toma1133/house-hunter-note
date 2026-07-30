@@ -211,6 +211,13 @@ export type Database = {
                     floor: string | null;
                     total_price: number | null;
                     unit_price: number | null;
+                    house_ping: number | null;
+                    parking_ping: number | null;
+                    parking_price: number | null;
+                    unit_price_no_parking: number | null;
+                    layout: string | null;
+                    parking_type: string | null;
+                    notes: string | null;
                     created_at: string;
                 };
                 Insert: {
@@ -220,6 +227,13 @@ export type Database = {
                     floor?: string | null;
                     total_price?: number | null;
                     unit_price?: number | null;
+                    house_ping?: number | null;
+                    parking_ping?: number | null;
+                    parking_price?: number | null;
+                    unit_price_no_parking?: number | null;
+                    layout?: string | null;
+                    parking_type?: string | null;
+                    notes?: string | null;
                     created_at?: string;
                 };
                 Update: {
@@ -229,6 +243,13 @@ export type Database = {
                     floor?: string | null;
                     total_price?: number | null;
                     unit_price?: number | null;
+                    house_ping?: number | null;
+                    parking_ping?: number | null;
+                    parking_price?: number | null;
+                    unit_price_no_parking?: number | null;
+                    layout?: string | null;
+                    parking_type?: string | null;
+                    notes?: string | null;
                     created_at?: string;
                 };
                 Relationships: [];

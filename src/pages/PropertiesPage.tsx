@@ -24,6 +24,8 @@ import PropertyModal from "../components/properties/PropertyModal";
 import ConditionModal from "../components/properties/ConditionModal";
 import ShareModal from "../components/common/ShareModal";
 import PendingInvitesBanner from "../components/common/PendingInvitesBanner";
+import AiExportModal from "../components/properties/AiExportModal";
+import AiImportModal from "../components/properties/AiImportModal";
 
 const PropertiesPage = () => {
     const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -102,6 +104,54 @@ const PropertiesPage = () => {
 
     // Condition Template Modal
     const [isConditionModalOpen, setIsConditionModalOpen] = useState(false);
+    const [isAiExportModalOpen, setIsAiExportModalOpen] = useState(false);
+    const [isAiImportModalOpen, setIsAiImportModalOpen] = useState(false);
+    const [aiPromptText, setAiPromptText] = useState("");
+
+    const handleExportAiBtnClick = () => {
+        if (!properties || properties.length === 0) return;
+        
+        // Remove undefined/null/empty strings for a cleaner prompt
+        const cleanData = properties.map(p => {
+            const cleanObj: any = {};
+            for (const [key, value] of Object.entries(p)) {
+                if (value !== null && value !== undefined && value !== "" && (!Array.isArray(value) || value.length > 0)) {
+                    cleanObj[key] = value;
+                }
+            }
+            return cleanObj;
+        });
+
+        const prompt = `請根據以下 JSON 格式的建案列表，幫助我填寫或更新缺漏的資訊（如：屋齡、總價、單價、總戶數、車位、公設比等，或是根據您對該社區的了解填寫其他欄位）。請保持欄位名稱與層級結構不變，並將更新後的結果以一個 JSON 陣列 (Array) 的格式回傳，陣列中的每個物件必須包含原本的 'id' 屬性以便對應。
+
+請務必只回傳 JSON 陣列，不要加入其他多餘的說明文字。
+
+目前的資料：
+${JSON.stringify(cleanData, null, 2)}`;
+        
+        setAiPromptText(prompt);
+        setIsAiExportModalOpen(true);
+    };
+
+    const handleImportAiResult = async (parsedData: any[]) => {
+        try {
+            const updatePromises = parsedData.map(async (updatedProp) => {
+                if (!updatedProp.id) return;
+                const originalProp = properties?.find(p => p.id === updatedProp.id);
+                if (originalProp) {
+                    await updateProperty.mutateAsync({
+                        ...originalProp,
+                        ...updatedProp,
+                        workspace_id: workspaceId || originalProp.workspace_id,
+                    });
+                }
+            });
+            await Promise.all(updatePromises);
+            setIsAiImportModalOpen(false);
+        } catch (err) {
+            console.error("Failed to update properties from AI result", err);
+        }
+    };
 
     const handleOpenConditionModal = () => {
         setIsConditionModalOpen(true);
@@ -317,6 +367,8 @@ const PropertiesPage = () => {
                 onAddBtnClick={handleAddPropertyBtnClick}
                 onSettingsBtnClick={handleOpenConditionModal}
                 onShareBtnClick={() => setIsShareModalOpen(true)}
+                onExportAiBtnClick={handleExportAiBtnClick}
+                onImportAiBtnClick={() => setIsAiImportModalOpen(true)}
                 onBackBtnClick={() => navigate("/workspaces")}
             />
             <PropertyList
@@ -367,6 +419,18 @@ const PropertiesPage = () => {
                     deleteKey={deleteKey}
                     onCloseClick={handleCloseDeleteModal}
                     onConfirmClick={handleConfirmDelete}
+                />
+            )}
+            {isAiExportModalOpen && (
+                <AiExportModal 
+                    promptText={aiPromptText}
+                    onCloseClick={() => setIsAiExportModalOpen(false)}
+                />
+            )}
+            {isAiImportModalOpen && (
+                <AiImportModal 
+                    onCloseClick={() => setIsAiImportModalOpen(false)}
+                    onImport={handleImportAiResult}
                 />
             )}
         </div>
