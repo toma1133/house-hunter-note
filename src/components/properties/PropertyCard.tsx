@@ -7,8 +7,10 @@ import {
     Edit3,
     Trash2,
     ChevronRight,
+    Home,
 } from "lucide-react";
 import { PropertyVM } from "../../models/types/PropertyTypes";
+import { formatNumber } from "../../utils/formatters";
 
 type PropertyCardProps = {
     property: PropertyVM;
@@ -23,6 +25,10 @@ const PropertyCard = ({
     onDeleteBtnClick,
     onEditBtnClick,
 }: PropertyCardProps) => {
+    const indoorTotalPing = (
+        (Number(property.mainBuildingPing) || 0) + (Number(property.subBuildingPing) || 0)
+    ) || Number(property.indoorPing) || 0;
+
     return (
         <div
             key={property.id}
@@ -53,10 +59,15 @@ const PropertyCard = ({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
-                        <div className="absolute bottom-3 left-3 right-3 text-white">
+                        <div className="absolute bottom-3 left-3 right-3 text-white flex items-center justify-between">
                             <span className="text-[10px] bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full font-bold">
                                 {property.city} {property.district}
                             </span>
+                            {property.buildingType && (
+                                <span className="text-[10px] bg-blue-600/70 backdrop-blur-md px-2 py-0.5 rounded-full font-bold">
+                                    {property.buildingType}
+                                </span>
+                            )}
                         </div>
                     </div>
                 )}
@@ -65,10 +76,15 @@ const PropertyCard = ({
                     <div className="flex justify-between items-start mb-3 gap-2">
                         <div>
                             {!property.coverImage && (
-                                <div className="flex items-center gap-2 mb-1.5">
+                                <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
                                     <span className="text-[10px] bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full font-bold border border-slate-200/50 dark:border-slate-600/50">
                                         {property.city} {property.district}
                                     </span>
+                                    {property.buildingType && (
+                                        <span className="text-[10px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">
+                                            {property.buildingType}
+                                        </span>
+                                    )}
                                 </div>
                             )}
                             <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors tracking-tight line-clamp-1">
@@ -103,18 +119,24 @@ const PropertyCard = ({
                     {/* Meta Tags */}
                     <div className="flex flex-wrap gap-2 text-xs font-semibold my-4">
                         <span className="flex items-center gap-1 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 px-2.5 py-1.5 rounded-xl border border-red-100 dark:border-red-900/40">
-                            <DollarSign size={14} /> {property.totalPrice} 萬
+                            <DollarSign size={14} /> {formatNumber(property.totalPrice)} 萬
                         </span>
                         <span className="flex items-center gap-1 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 px-2.5 py-1.5 rounded-xl border border-indigo-100 dark:border-indigo-900/40">
                             <Layout size={14} /> {property.layoutRooms}房{" "}
                             {property.layoutHalls}廳 {property.layoutBaths}衛
                         </span>
                         <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl border border-slate-200/40 dark:border-slate-600/40">
-                            <Maximize size={14} /> {property.totalPing} 坪
+                            <Maximize size={14} /> 權狀 {formatNumber(property.totalPing)} 坪
                         </span>
+                        {indoorTotalPing > 0 && (
+                            <span className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2.5 py-1.5 rounded-xl border border-blue-100 dark:border-blue-800/40 font-bold">
+                                <Home size={13} /> 室內 {formatNumber(indoorTotalPing.toFixed(2))} 坪
+                            </span>
+                        )}
                         {property.parking && (
                             <span className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl border border-slate-200/40 dark:border-slate-600/40">
                                 <Car size={14} /> {property.parking}
+                                {property.parkingCount ? ` x${property.parkingCount}` : ""}
                                 {property.evCharging && (
                                     <Zap
                                         size={14}

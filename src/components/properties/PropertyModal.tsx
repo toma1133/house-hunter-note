@@ -280,19 +280,50 @@ const PropertyModal = ({
                     </div>
                     <div>
                         <label
-                            htmlFor="indoorPing"
+                            htmlFor="mainBuildingPing"
                             className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
                         >
-                            主+附室內
+                            主建物坪數
                         </label>
                         <input
                             type="number"
-                            name="indoorPing"
+                            name="mainBuildingPing"
                             step="0.01"
                             className="w-full p-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all shadow-sm"
-                            value={formData.indoorPing}
+                            value={formData.mainBuildingPing ?? ""}
                             onChange={onFormChange}
+                            placeholder="例: 22.5"
                         />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="subBuildingPing"
+                            className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                        >
+                            附屬建物坪數
+                        </label>
+                        <input
+                            type="number"
+                            name="subBuildingPing"
+                            step="0.01"
+                            className="w-full p-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all shadow-sm"
+                            value={formData.subBuildingPing ?? ""}
+                            onChange={onFormChange}
+                            placeholder="例: 3.2"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5"
+                        >
+                            室內總坪數 (自動加總)
+                        </label>
+                        <div className="w-full p-2.5 text-sm bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl font-bold text-blue-600 dark:text-blue-400 shadow-inner flex items-center justify-between">
+                            <span>
+                                {((Number(formData.mainBuildingPing) || 0) + (Number(formData.subBuildingPing) || 0)).toFixed(2)}
+                            </span>
+                            <span className="text-xs font-normal text-slate-500 dark:text-slate-400">坪</span>
+                        </div>
                     </div>
                     <div>
                         <label
@@ -400,7 +431,7 @@ const PropertyModal = ({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-3">
                         <div>
                             <label
                                 htmlFor="parking"
@@ -421,6 +452,24 @@ const PropertyModal = ({
                                 <option value="升降機械">升機</option>
                                 <option value="其他">其他</option>
                             </select>
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="parkingCount"
+                                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                            >
+                                車位數量
+                            </label>
+                            <input
+                                type="number"
+                                name="parkingCount"
+                                min="0"
+                                max="10"
+                                className="w-full p-2.5 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none dark:text-white transition-all shadow-sm"
+                                value={formData.parkingCount ?? 0}
+                                onChange={onFormChange}
+                                placeholder="例: 1"
+                            />
                         </div>
                         <div>
                             <label

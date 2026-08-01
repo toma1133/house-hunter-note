@@ -16,6 +16,9 @@ export type Database = {
         Tables: {
             properties: {
                 Row: {
+                    mainBuildingPing: number;
+                    subBuildingPing: number;
+                    parkingCount: number;
                     address: string;
                     buildingType: string;
                     city: string;
@@ -46,6 +49,9 @@ export type Database = {
                     workspace_id: string | null;
                 };
                 Insert: {
+                    mainBuildingPing?: number | null;
+                    subBuildingPing?: number | null;
+                    parkingCount?: number | null;
                     address?: string | null;
                     buildingType?: string | null;
                     city?: string | null;
@@ -76,6 +82,9 @@ export type Database = {
                     workspace_id?: string | null;
                 };
                 Update: {
+                    mainBuildingPing?: number | null;
+                    subBuildingPing?: number | null;
+                    parkingCount?: number | null;
                     address?: string | null;
                     buildingType?: string | null;
                     city?: string | null;

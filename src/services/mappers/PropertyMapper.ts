@@ -40,8 +40,18 @@ export const toPropertyVM = (row: any): PropertyVM => {
         url: i.url || "",
     }));
 
+    const mainBuildingPing = row.mainBuildingPing ?? 0;
+    const subBuildingPing = row.subBuildingPing ?? 0;
+    const indoorPing = (mainBuildingPing || subBuildingPing) 
+        ? Math.round((mainBuildingPing + subBuildingPing) * 100) / 100 
+        : (row.indoorPing ?? 0);
+
     return {
         ...row,
+        mainBuildingPing,
+        subBuildingPing,
+        indoorPing,
+        parkingCount: row.parkingCount ?? 0,
         conditions: { mustHaves, niceToHaves },
         transactions,
         roomImages,
@@ -53,7 +63,17 @@ export const toPropertiesVM = (rows: any[]): PropertyVM[] => {
 };
 
 export const toPropertyInsert = (vm: Partial<PropertyVM>): PropertyRowInsert => {
+    const mainBuilding = vm.mainBuildingPing ?? 0;
+    const subBuilding = vm.subBuildingPing ?? 0;
+    const indoorTotal = (mainBuilding || subBuilding) 
+        ? Math.round((mainBuilding + subBuilding) * 100) / 100 
+        : (vm.indoorPing ?? 0);
+
     return {
+        mainBuildingPing: mainBuilding,
+        subBuildingPing: subBuilding,
+        indoorPing: indoorTotal,
+        parkingCount: vm.parkingCount ?? 0,
         address: vm.address,
         buildingType: vm.buildingType,
         city: vm.city,
@@ -64,7 +84,6 @@ export const toPropertyInsert = (vm: Partial<PropertyVM>): PropertyRowInsert => 
         evCharging: vm.evCharging,
         floorPlanImage: vm.floorPlanImage,
         houseAge: vm.houseAge,
-        indoorPing: vm.indoorPing,
         landZoning: vm.landZoning,
         layoutBalconies: vm.layoutBalconies,
         layoutBaths: vm.layoutBaths,
