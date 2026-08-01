@@ -4,7 +4,7 @@ import {
     MouseEventHandler,
     useState,
 } from "react";
-import { Building2, ImageIcon, Layout, Map, Plus, X, Zap } from "lucide-react";
+import { Building2, ChevronDown, ChevronUp, GripVertical, ImageIcon, Layout, Map, Plus, X, Zap } from "lucide-react";
 import type { PropertyRoomImage, PropertyVM } from "../../models/types/PropertyTypes";
 import FormModal from "../common/FormModal";
 import { TAIWAN_REGIONS } from "../../constants/Regions";
@@ -17,6 +17,7 @@ type PropertyModalProps = {
     onFormSubmit: SubmitEventHandler<HTMLFormElement>;
     onAddRoomImage?: (image: PropertyRoomImage) => void;
     onDeleteRoomImage?: (imageId: string) => void;
+    onReorderRoomImages?: (images: PropertyRoomImage[]) => void;
 };
 
 const PropertyModal = ({
@@ -27,9 +28,34 @@ const PropertyModal = ({
     onFormSubmit,
     onAddRoomImage,
     onDeleteRoomImage,
+    onReorderRoomImages,
 }: PropertyModalProps) => {
     const [newRoomName, setNewRoomName] = useState("");
     const [newRoomUrl, setNewRoomUrl] = useState("");
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+    const handleMoveImage = (fromIndex: number, toIndex: number) => {
+        if (!formData.roomImages || toIndex < 0 || toIndex >= formData.roomImages.length) return;
+        const updated = [...formData.roomImages];
+        const [movedItem] = updated.splice(fromIndex, 1);
+        updated.splice(toIndex, 0, movedItem);
+        onReorderRoomImages?.(updated);
+    };
+
+    const handleDragStart = (index: number) => {
+        setDraggedIndex(index);
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (index: number) => {
+        if (draggedIndex !== null && draggedIndex !== index) {
+            handleMoveImage(draggedIndex, index);
+        }
+        setDraggedIndex(null);
+    };
 
     const handleAddRoomImage = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -363,75 +389,78 @@ const PropertyModal = ({
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
                     <Layout size={16} /> 格局與車位
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label
-                            htmlFor="layoutRooms"
-                            className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
-                        >
-                            室內格局
-                        </label>
-                        <div className="flex flex-wrap gap-2 items-center">
-                            <div className="flex items-center gap-1.5">
-                                <input
-                                    type="number"
-                                    name="layoutRooms"
-                                    min="0"
-                                    max="10"
-                                    className="w-14 p-2 text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white"
-                                    value={formData.layoutRooms}
-                                    onChange={onFormChange}
-                                />
-                                <span className="text-sm dark:text-slate-300">
-                                    房
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <input
-                                    type="number"
-                                    name="layoutHalls"
-                                    min="0"
-                                    max="5"
-                                    className="w-14 p-2 text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white"
-                                    value={formData.layoutHalls}
-                                    onChange={onFormChange}
-                                />
-                                <span className="text-sm dark:text-slate-300">
-                                    廳
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <input
-                                    type="number"
-                                    name="layoutBaths"
-                                    min="0"
-                                    max="5"
-                                    className="w-14 p-2 text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white"
-                                    value={formData.layoutBaths}
-                                    onChange={onFormChange}
-                                />
-                                <span className="text-sm dark:text-slate-300">
-                                    衛
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <input
-                                    type="number"
-                                    name="layoutBalconies"
-                                    min="0"
-                                    max="5"
-                                    className="w-14 p-2 text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white"
-                                    value={formData.layoutBalconies}
-                                    onChange={onFormChange}
-                                />
-                                <span className="text-sm dark:text-slate-300">
-                                    陽台
-                                </span>
-                            </div>
+                
+                {/* Row 1: 室內格局 */}
+                <div>
+                    <label
+                        htmlFor="layoutRooms"
+                        className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-2"
+                    >
+                        室內格局
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                name="layoutRooms"
+                                min="0"
+                                max="10"
+                                className="w-16 p-2 text-sm text-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white font-bold"
+                                value={formData.layoutRooms}
+                                onChange={onFormChange}
+                            />
+                            <span className="text-sm font-medium dark:text-slate-300">
+                                房
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                name="layoutHalls"
+                                min="0"
+                                max="5"
+                                className="w-16 p-2 text-sm text-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white font-bold"
+                                value={formData.layoutHalls}
+                                onChange={onFormChange}
+                            />
+                            <span className="text-sm font-medium dark:text-slate-300">
+                                廳
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                name="layoutBaths"
+                                min="0"
+                                max="5"
+                                className="w-16 p-2 text-sm text-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white font-bold"
+                                value={formData.layoutBaths}
+                                onChange={onFormChange}
+                            />
+                            <span className="text-sm font-medium dark:text-slate-300">
+                                衛
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                name="layoutBalconies"
+                                min="0"
+                                max="5"
+                                className="w-16 p-2 text-sm text-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white font-bold"
+                                value={formData.layoutBalconies}
+                                onChange={onFormChange}
+                            />
+                            <span className="text-sm font-medium dark:text-slate-300">
+                                陽台
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    <div className="grid grid-cols-3 gap-3">
+                {/* Row 2: 車位與充電樁 */}
+                <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/80">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
                         <div>
                             <label
                                 htmlFor="parking"
@@ -489,7 +518,7 @@ const PropertyModal = ({
                         </div>
                     </div>
 
-                    <div className="md:col-span-2 pt-2 border-t dark:border-slate-700 mt-2">
+                    <div className="pt-2">
                         <label
                             htmlFor="evCharging"
                             className="flex items-center gap-3 cursor-pointer select-none p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors w-full sm:w-auto"
@@ -589,38 +618,68 @@ const PropertyModal = ({
                             </button>
                         </div>
 
-                        {formData.roomImages &&
-                            formData.roomImages.length > 0 && (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    {formData.roomImages.map((img) => (
+                        {formData.roomImages && formData.roomImages.length > 0 && (
+                            <div className="space-y-2">
+                                <span className="text-[11px] text-slate-400 font-bold block">
+                                    可拖拉或使用箭頭調整順序 (首張為預設展示):
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {formData.roomImages.map((img, idx) => (
                                         <div
                                             key={img.id}
-                                            className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-1.5 rounded-lg group hover:border-blue-300 transition-colors"
+                                            draggable
+                                            onDragStart={() => handleDragStart(idx)}
+                                            onDragOver={handleDragOver}
+                                            onDrop={() => handleDrop(idx)}
+                                            className={`flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 p-2 rounded-xl group transition-all cursor-grab active:cursor-grabbing ${
+                                                draggedIndex === idx ? "opacity-40 border-blue-400" : "hover:border-blue-300 shadow-sm"
+                                            }`}
                                         >
                                             <div className="flex items-center gap-2 overflow-hidden">
+                                                <GripVertical size={16} className="text-slate-400 shrink-0 cursor-grab" />
                                                 <img
                                                     src={img.url}
                                                     alt={img.name}
-                                                    className="w-8 h-8 object-cover rounded-md bg-slate-100"
+                                                    className="w-9 h-9 object-cover rounded-lg bg-slate-100 shrink-0"
                                                     loading="lazy"
                                                 />
                                                 <span className="text-xs font-medium dark:text-slate-200 truncate">
                                                     {img.name}
                                                 </span>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    onDeleteRoomImage?.(img.id)
-                                                }
-                                                className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md opacity-50 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <X size={14} />
-                                            </button>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    disabled={idx === 0}
+                                                    onClick={() => handleMoveImage(idx, idx - 1)}
+                                                    className="text-slate-400 hover:text-blue-600 disabled:opacity-20 p-1 rounded-md transition-all"
+                                                    title="上移"
+                                                >
+                                                    <ChevronUp size={14} />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={idx === (formData.roomImages?.length || 0) - 1}
+                                                    onClick={() => handleMoveImage(idx, idx + 1)}
+                                                    className="text-slate-400 hover:text-blue-600 disabled:opacity-20 p-1 rounded-md transition-all"
+                                                    title="下移"
+                                                >
+                                                    <ChevronDown size={14} />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onDeleteRoomImage?.(img.id)}
+                                                    className="text-red-400 hover:text-red-600 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                                                    title="刪除"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                            )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

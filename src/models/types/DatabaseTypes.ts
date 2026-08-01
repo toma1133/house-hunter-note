@@ -194,6 +194,7 @@ export type Database = {
                     property_id: string;
                     name: string | null;
                     url: string;
+                    sort_order: number | null;
                     created_at: string;
                 };
                 Insert: {
@@ -201,6 +202,7 @@ export type Database = {
                     property_id: string;
                     name?: string | null;
                     url: string;
+                    sort_order?: number | null;
                     created_at?: string;
                 };
                 Update: {
@@ -208,6 +210,7 @@ export type Database = {
                     property_id?: string;
                     name?: string | null;
                     url?: string;
+                    sort_order?: number | null;
                     created_at?: string;
                 };
                 Relationships: [];

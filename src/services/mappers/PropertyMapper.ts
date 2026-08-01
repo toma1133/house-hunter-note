@@ -34,11 +34,14 @@ export const toPropertyVM = (row: any): PropertyVM => {
         notes: t.notes || "",
     }));
 
-    const roomImages = (row.property_room_images || []).map((i: any) => ({
-        id: i.id,
-        name: i.name || "",
-        url: i.url || "",
-    }));
+    const roomImages = (row.property_room_images || [])
+        .slice()
+        .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+        .map((i: any) => ({
+            id: i.id,
+            name: i.name || "",
+            url: i.url || "",
+        }));
 
     const mainBuildingPing = row.mainBuildingPing ?? 0;
     const subBuildingPing = row.subBuildingPing ?? 0;

@@ -8,10 +8,11 @@ async function upsertRelations(propertyId: string, payload: Partial<PropertyVM>)
     if (payload.roomImages !== undefined) {
         await supabaseClient.from("property_room_images").delete().eq("property_id", propertyId);
         if (payload.roomImages && payload.roomImages.length > 0) {
-            const imagesToInsert = payload.roomImages.map(img => ({
+            const imagesToInsert = payload.roomImages.map((img, index) => ({
                 property_id: propertyId,
                 name: img.name,
                 url: img.url,
+                sort_order: index,
             }));
             await supabaseClient.from("property_room_images").insert(imagesToInsert);
         }

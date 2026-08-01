@@ -213,21 +213,10 @@ const PropertyPage = () => {
         }
     };
 
-    const handleAddTransaction = async (txData: {
-        date: string;
-        floor: string;
-        totalPrice: string;
-        unitPrice: string;
-        housePing?: string;
-        parkingPing?: string;
-        parkingPrice?: string;
-        unitPriceNoParking?: string;
-        layout?: string;
-        parkingType?: string;
-        notes?: string;
-    }) => {
+    const handleAddTransaction = async (txData: PropertyTransaction) => {
         const newTx: PropertyTransaction = {
-            id: crypto.randomUUID(),
+            ...txData,
+            id: txData.id || crypto.randomUUID(),
             date: txData.date.trim(),
             floor: txData.floor.trim(),
             totalPrice: txData.totalPrice.trim(),
@@ -242,6 +231,16 @@ const PropertyPage = () => {
         };
 
         const updatedTransactions = [...(prop.transactions || []), newTx];
+        await updateProperty.mutateAsync({
+            ...prop,
+            transactions: updatedTransactions,
+        });
+    };
+
+    const handleUpdateTransaction = async (updatedTx: PropertyTransaction) => {
+        const updatedTransactions = (prop.transactions || []).map((tx) =>
+            tx.id === updatedTx.id ? updatedTx : tx,
+        );
         await updateProperty.mutateAsync({
             ...prop,
             transactions: updatedTransactions,
@@ -288,6 +287,14 @@ const PropertyPage = () => {
             roomImages: (editFormData.roomImages || []).filter(
                 (img) => img.id !== imageId,
             ),
+        });
+    };
+
+    const handleReorderEditRoomImages = (newImages: PropertyRoomImage[]) => {
+        if (!editFormData) return;
+        setEditFormData({
+            ...editFormData,
+            roomImages: newImages,
         });
     };
 
@@ -340,6 +347,7 @@ const PropertyPage = () => {
                     <PropertyTransactionsCard
                         transactions={prop.transactions}
                         onAddTransaction={handleAddTransaction}
+                        onUpdateTransaction={handleUpdateTransaction}
                         onDeleteTransaction={handleDeleteTransaction}
                     />
                 </div>
@@ -375,6 +383,7 @@ const PropertyPage = () => {
                     onFormSubmit={handleSaveEditForm}
                     onAddRoomImage={handleAddEditRoomImage}
                     onDeleteRoomImage={handleDeleteEditRoomImage}
+                    onReorderRoomImages={handleReorderEditRoomImages}
                 />
             )}
 

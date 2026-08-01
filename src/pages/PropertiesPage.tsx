@@ -280,6 +280,13 @@ ${JSON.stringify(cleanData, null, 2)}`;
         }));
     };
 
+    const handleReorderRoomImages = (newImages: PropertyRoomImage[]) => {
+        setFormProperty((prev) => ({
+            ...prev,
+            roomImages: newImages,
+        }));
+    };
+
     const handlePropertyModalSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -406,6 +413,7 @@ ${JSON.stringify(cleanData, null, 2)}`;
                     onFormSubmit={handlePropertyModalSubmit}
                     onAddRoomImage={handleAddRoomImage}
                     onDeleteRoomImage={handleDeleteRoomImage}
+                    onReorderRoomImages={handleReorderRoomImages}
                 />
             )}
             {isConditionModalOpen && conditionTemplate && (
